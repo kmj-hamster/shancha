@@ -2636,11 +2636,10 @@ function fillClueToInput(clueText) {
 
     // 检查是否重复填充（防止重复点击同一个clue）
     if (input.value.trim() === clueText) {
-        // 重复点击，恢复选中状态并聚焦
+        // 重复点击，恢复选中状态（不聚焦，避免手机端唤起键盘）
         if (gameState.getState().current_tab === 'clue') {
             selectClue(clueText);
         }
-        input.focus();
         return;
     }
 
@@ -2650,8 +2649,8 @@ function fillClueToInput(clueText) {
     // 填充新的clue（覆盖原有内容）
     input.value = clueText;
 
-    // 自动聚焦输入框
-    input.focus();
+    // 不自动聚焦输入框，避免手机端唤起键盘
+    // 用户需手动点击终端区域才会唤起键盘
 
     // 更新光标位置
     if (window.updateCursorPosition) {

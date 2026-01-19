@@ -9,7 +9,7 @@ let SEARCH_TEXT = {};
 function initSearchLocalization() {
     const lang = localStorage.getItem('gameLang') || 'en';
     SEARCH_TEXT = {
-        clueNotDiscovered: lang === 'zh' ? '线索尚未发现' : 'Clue not yet discovered',
+        clueNotDiscovered: lang === 'zh' ? '暂无相关记忆' : 'No related memories found',
         noResultsFound: lang === 'zh' ? '未找到"{clue}"的结果' : 'No results found for "{clue}"',
         searchSuccess: lang === 'zh'
             ? '搜索成功！发现{memory}条记忆，{file}份档案。'
