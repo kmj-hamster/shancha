@@ -60,9 +60,6 @@ class OpeningScreen {
 
     // 根据语言设置更新UI文本
     this.updateUIForLanguage()
-
-    // 🎵 尝试播放Memory BGM（如果浏览器阻止，等待用户首次点击）
-    this.startOpeningBGM()
   }
 
   /**
@@ -127,11 +124,6 @@ class OpeningScreen {
 
     console.log('[Opening] Returning to language selection...')
 
-    // 停止BGM
-    if (window.audioManager && audioManager.currentMusic) {
-      audioManager.stopMusic(500)
-    }
-
     // 移除键盘监听
     document.removeEventListener('keydown', this.keydownHandler)
 
@@ -139,90 +131,6 @@ class OpeningScreen {
     if (typeof LangSelect !== 'undefined') {
       LangSelect.returnToLangSelect()
     }
-  }
-
-  /**
-   * 启动Opening BGM（Memory）
-   * 使用hack方法绕过浏览器自动播放限制
-   */
-  startOpeningBGM() {
-    if (!window.audioManager) {
-      console.warn('[BGM] AudioManager not available')
-      return
-    }
-
-    // 🔓 Hack 1: 静音播放法（成功率最高）
-    console.log('[BGM] Attempting autoplay hack: muted playback...')
-    this.tryMutedPlayback()
-  }
-
-  /**
-   * 尝试静音播放hack
-   */
-  tryMutedPlayback() {
-    const audio = new Audio()
-    audio.src = `https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/Memory.mp3`
-    audio.loop = true
-    audio.muted = true  // 关键：先静音
-    audio.volume = 0.35  // music volume (0.5) * master volume (0.7)
-
-    audio.play()
-      .then(() => {
-        console.log('[BGM] ✅ Muted playback started, unmuting in 100ms...')
-
-        // 延迟100ms后取消静音
-        setTimeout(() => {
-          audio.muted = false
-          console.log('[BGM] ✅ Audio unmuted, Memory BGM playing!')
-
-          // 将音频实例保存到audioManager
-          if (window.audioManager) {
-            audioManager.currentMusic = audio
-            audioManager.currentMusicId = 'Memory'
-          }
-        }, 100)
-      })
-      .catch(err => {
-        console.log('[BGM] ❌ Muted playback failed:', err.message)
-        console.log('[BGM] Falling back to user interaction triggers...')
-
-        // Hack失败，设置多重fallback
-        this.setupMultipleFallbacks()
-      })
-  }
-
-  /**
-   * 设置多重fallback触发点
-   */
-  setupMultipleFallbacks() {
-    const openingScreen = document.querySelector('.opening-screen')
-    if (!openingScreen) return
-
-    let musicStarted = false
-
-    const startMusic = () => {
-      if (musicStarted) return
-      musicStarted = true
-
-      console.log('[BGM] User interaction detected, starting Memory BGM...')
-      audioManager.playMusic('Memory', 1, 0)
-
-      // 移除所有监听器
-      cleanup()
-    }
-
-    const cleanup = () => {
-      openingScreen.removeEventListener('click', startMusic)
-      openingScreen.removeEventListener('mousemove', startMusic)
-      document.removeEventListener('keydown', startMusic)
-    }
-
-    // 多个触发点：点击、鼠标移动、按键
-    openingScreen.addEventListener('click', startMusic, { once: true })
-    openingScreen.addEventListener('mousemove', startMusic, { once: true })
-    document.addEventListener('keydown', startMusic, { once: true })
-
-    console.log('[BGM] Fallback triggers ready: click, mousemove, keydown')
   }
 
   /**
@@ -237,13 +145,8 @@ class OpeningScreen {
 
     console.log('Login clicked, starting transition...')
 
-    // 🎵 淡出Memory BGM，播放Opening音效
+    // 🎵 播放Opening音效
     if (window.audioManager) {
-      console.log('[BGM] Fading out Memory (1s)...')
-      audioManager.stopMusic(1000)  // 1秒淡出
-
-      // 等待1秒淡出完成后播放Opening音效
-      await this.delay(1000)
       console.log('[BGM] Playing Opening SFX (12s)...')
       audioManager.playSFX('Opening.wav', 1, true)  // 使用customSfxPath，完整文件名
 
