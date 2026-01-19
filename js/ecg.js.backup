@@ -1,0 +1,356 @@
+/**
+ * ECG (心电图) 动画控制器
+ * 基于 machine-test.html 的 Canvas 实现
+ * 支持多种波形模式和颜色状态
+ */
+
+// 颜色配置
+const ECG_COLORS = {
+    green: '#80ff8a',   // 正常 - 磷光绿
+    red: '#FF3333',     // 危险 - 鲜红
+    blue: '#00BFFF',    // 复苏 - 天蓝
+    gray: '#444444'     // 死亡 - 灰暗
+};
+
+// 波形模式
+const ECG_MODE = {
+    NORMAL: 'normal',           // 正常PQRST波形
+    FIBRILLATION: 'fibrillation', // 室颤（不规则高频）
+    FLATLINE: 'flatline'        // 平线（死亡）
+};
+
+class ECGController {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) {
+            console.warn('[ECG] Canvas not found:', canvasId);
+            return;
+        }
+        this.ctx = this.canvas.getContext('2d');
+        this.x = 0;
+        this.speed = 1.2;  // 降低速度
+        this.baseY = 0;
+        this.animationId = null;
+        this.isRunning = false;
+        this.points = [];  // 存储波形历史点
+        this.lastY = 0;    // 上一个点的y坐标
+
+        // 变化因子 - 使每次心跳略有不同
+        this.ampFactor = 1.0;      // 幅度因子
+        this.cycleFactor = 0;      // 周期偏移
+
+        // 新增：颜色和模式状态
+        this.color = 'green';
+        this.mode = ECG_MODE.NORMAL;
+        this.isFlashing = false;
+        this.flashInterval = null;
+
+        // 过渡动画状态
+        this.transition = null;
+
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+
+        // 页面可见性处理 - 隐藏时暂停，显示时恢复
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.stop();
+            } else {
+                this.start();
+            }
+        });
+    }
+
+    resizeCanvas() {
+        if (!this.canvas) return;
+        this.canvas.width = this.canvas.parentElement.offsetWidth;
+        this.canvas.height = this.canvas.parentElement.offsetHeight;
+        this.baseY = this.canvas.height / 2;
+        this.points = [];  // 窗口调整时清空
+        this.x = 0;
+    }
+
+    start() {
+        if (this.isRunning || !this.canvas) return;
+        this.isRunning = true;
+        this.draw();
+    }
+
+    stop() {
+        this.isRunning = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+    }
+
+    draw() {
+        if (!this.isRunning) return;
+
+        const ctx = this.ctx;
+        const canvas = this.canvas;
+
+        // 拖尾效果 - 半透明覆盖
+        ctx.fillStyle = 'rgba(3, 18, 5, 0.08)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 根据模式计算y值
+        let y = this.calculateY();
+
+        // 绘制擦除区（扫描头前方）
+        ctx.fillStyle = '#031205';
+        ctx.fillRect(this.x + 2, 0, 12, canvas.height);
+
+        // 绘制当前线段（从上一点到当前点）
+        if (this.points.length > 0) {
+            const lastPoint = this.points[this.points.length - 1];
+            ctx.beginPath();
+            // 使用当前颜色（支持闪烁时透明度变化）
+            ctx.strokeStyle = this.getCurrentColor();
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(this.x, y);
+            ctx.stroke();
+        }
+
+        // 添加新点到历史
+        this.points.push({ x: this.x, y: y });
+        this.lastY = y;
+
+        // 随机卡顿：偶尔跳过前进，产生卡顿感（平线模式除外）
+        if (this.mode === ECG_MODE.FLATLINE || Math.random() > 0.15) {
+            this.x += this.speed;
+        }
+
+        // 循环：x超出画布时重置
+        if (this.x > canvas.width) {
+            this.x = 0;
+            this.points = [];
+            // 完全清空画布，开始新一轮
+            ctx.fillStyle = '#031205';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        this.animationId = requestAnimationFrame(() => this.draw());
+    }
+
+    // 根据模式计算Y坐标
+    calculateY() {
+        let y = this.baseY;
+
+        switch (this.mode) {
+            case ECG_MODE.FLATLINE:
+                // 平线模式：只有微小噪点
+                y += (Math.random() - 0.5) * 1;
+                break;
+
+            case ECG_MODE.FIBRILLATION:
+                // 室颤模式：不规则高频小波动
+                y += (Math.random() - 0.5) * 20;
+                break;
+
+            case ECG_MODE.NORMAL:
+            default:
+                // 正常PQRST波形
+                const cycle = (this.x + this.cycleFactor) % 200;
+
+                if (cycle > 50 && cycle < 60) y -= 5 * this.ampFactor;        // P波
+                else if (cycle > 70 && cycle < 75) y += 5 * this.ampFactor;   // Q波
+                else if (cycle > 75 && cycle < 85) y -= 40 * this.ampFactor;  // R波（主峰）
+                else if (cycle > 85 && cycle < 90) y += 15 * this.ampFactor;  // S波
+                else if (cycle > 100 && cycle < 115) y -= 8 * this.ampFactor; // T波
+
+                // 随机噪点增加真实感
+                y += (Math.random() - 0.5) * 2;
+
+                // 每个心跳周期结束时，随机调整下一周期的因子
+                if (cycle < this.speed && this.x > 10) {
+                    this.ampFactor = 0.85 + Math.random() * 0.3;
+                    this.cycleFactor = (Math.random() - 0.5) * 10;
+                }
+                break;
+        }
+
+        return y;
+    }
+
+    // 获取当前颜色（支持闪烁）
+    getCurrentColor() {
+        return ECG_COLORS[this.color] || ECG_COLORS.green;
+    }
+
+    // 根据游戏状态调整心率
+    setBPM(bpm) {
+        // 72 BPM = 正常速度
+        this.speed = 2 * (bpm / 72);
+    }
+
+    // ========== 新增：颜色和模式控制 ==========
+
+    // 设置波形颜色
+    setColor(color) {
+        if (ECG_COLORS[color]) {
+            this.color = color;
+        }
+    }
+
+    // 设置波形模式
+    setMode(mode) {
+        if (Object.values(ECG_MODE).includes(mode)) {
+            this.mode = mode;
+        }
+    }
+
+    // 单次强跳（脉冲效果）
+    pulse() {
+        const originalAmp = this.ampFactor;
+        this.ampFactor = 1.8;  // 临时增大幅度
+        setTimeout(() => {
+            this.ampFactor = originalAmp;
+        }, 300);
+    }
+
+    // 闪烁效果
+    flash(duration = 1000) {
+        if (this.isFlashing) return;
+        this.isFlashing = true;
+        const originalColor = this.color;
+        let toggle = false;
+
+        this.flashInterval = setInterval(() => {
+            toggle = !toggle;
+            this.color = toggle ? 'red' : originalColor;
+        }, 100);
+
+        setTimeout(() => {
+            clearInterval(this.flashInterval);
+            this.color = originalColor;
+            this.isFlashing = false;
+        }, duration);
+    }
+
+    // 平滑过渡到新状态
+    transitionTo(targetState, duration = 2000) {
+        const { mode, color, bpm } = targetState;
+
+        // 如果有BPM变化，渐变
+        if (bpm !== undefined) {
+            const startBPM = this.speed * 72 / 2;
+            const startTime = Date.now();
+
+            const animateBPM = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentBPM = startBPM + (bpm - startBPM) * progress;
+                this.setBPM(currentBPM);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateBPM);
+                }
+            };
+            animateBPM();
+        }
+
+        // 颜色和模式在中点切换
+        setTimeout(() => {
+            if (mode) this.setMode(mode);
+            if (color) this.setColor(color);
+        }, duration / 2);
+    }
+
+    // ========== 场景便捷方法 ==========
+
+    // 创伤记忆发现反馈
+    onTraumaDiscover() {
+        this.setColor('red');
+        this.setBPM(130);
+        setTimeout(() => {
+            this.setColor('green');
+            this.setBPM(72);
+        }, 3000);
+    }
+
+    // 删除序列（加速→变红→室颤→平线）
+    onDeleteSequence() {
+        // 阶段1: 加速+变红 (0-2秒)
+        this.setBPM(150);
+        this.setColor('red');
+
+        // 阶段2: 室颤 (2-5秒)
+        setTimeout(() => {
+            this.setMode(ECG_MODE.FIBRILLATION);
+        }, 2000);
+
+        // 阶段3: 平线+变灰 (5秒后)
+        setTimeout(() => {
+            this.setMode(ECG_MODE.FLATLINE);
+            this.setColor('gray');
+            this.setBPM(72);  // 恢复正常速度，但是平线
+        }, 5000);
+    }
+
+    // 觉醒复苏（平线→天蓝→恢复）
+    onAwakening() {
+        // 从平线开始
+        this.setMode(ECG_MODE.FLATLINE);
+        this.setColor('blue');
+
+        // 1秒后开始恢复
+        setTimeout(() => {
+            this.setMode(ECG_MODE.NORMAL);
+            this.setBPM(60);
+        }, 1000);
+
+        // 3秒后完全恢复
+        setTimeout(() => {
+            this.setColor('green');
+            this.setBPM(72);
+        }, 3000);
+    }
+
+    // 发现成功反馈（随机选择模板）
+    onDiscoverSuccess() {
+        const templates = [
+            // 模板1: 心跳加速2秒
+            () => {
+                this.setBPM(100);
+                setTimeout(() => this.setBPM(72), 2000);
+            },
+            // 模板2: 短暂闪烁
+            () => {
+                this.flash(800);
+            },
+            // 模板3: 单次脉冲强跳
+            () => {
+                this.pulse();
+            }
+        ];
+
+        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+        randomTemplate();
+    }
+
+    // 重置到初始状态
+    reset() {
+        this.setColor('green');
+        this.setMode(ECG_MODE.NORMAL);
+        this.setBPM(72);
+        if (this.flashInterval) {
+            clearInterval(this.flashInterval);
+            this.isFlashing = false;
+        }
+    }
+}
+
+// 全局实例
+window.ecgController = null;
+
+// 初始化（在 DOM 加载后）
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('ecgCanvas');
+    if (canvas) {
+        window.ecgController = new ECGController('ecgCanvas');
+        window.ecgController.start();
+    }
+});

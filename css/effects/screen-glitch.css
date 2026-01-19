@@ -1,0 +1,394 @@
+/**
+ * 屏幕抖动/故障效果
+ * Screen Glitch Effects
+ */
+
+/* ========== 微弱持续抖动 ========== */
+
+.glitch-weak {
+  animation: weak-glitch 5s infinite;
+}
+
+@keyframes weak-glitch {
+  0%, 96% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+  96.5% {
+    transform: translate(1px, -1px);
+    filter: contrast(1.05) brightness(1.02);
+  }
+  97% {
+    transform: translate(-1px, 1px);
+    filter: contrast(0.95) brightness(0.98);
+  }
+  97.5% {
+    transform: translate(0.5px, 0.5px);
+    filter: contrast(1.02);
+  }
+  98% {
+    transform: translate(-0.5px, -0.5px);
+    filter: brightness(1.01);
+  }
+  98.5%, 100% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+}
+
+/* ========== 强烈抖动效果 ========== */
+
+.glitch-strong {
+  animation: strong-glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-iteration-count: 3;
+}
+
+@keyframes strong-glitch {
+  0% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+  10% {
+    transform: translate(-3px, 2px);
+    filter: hue-rotate(90deg) contrast(1.5);
+  }
+  20% {
+    transform: translate(3px, -2px);
+    filter: hue-rotate(-90deg) brightness(1.3);
+  }
+  30% {
+    transform: translate(-2px, -3px);
+    filter: contrast(1.8) saturate(2);
+  }
+  40% {
+    transform: translate(2px, 3px);
+    filter: invert(0.15) brightness(1.2);
+  }
+  50% {
+    transform: translate(-3px, -1px);
+    filter: hue-rotate(45deg) contrast(1.4);
+  }
+  60% {
+    transform: translate(3px, 1px);
+    filter: brightness(0.8) contrast(1.3);
+  }
+  70% {
+    transform: translate(-1px, 3px);
+    filter: hue-rotate(-45deg) saturate(1.5);
+  }
+  80% {
+    transform: translate(1px, -3px);
+    filter: contrast(1.6) brightness(1.1);
+  }
+  90% {
+    transform: translate(-2px, 2px);
+    filter: brightness(0.9);
+  }
+  100% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+}
+
+/* ========== RGB色彩分离抖动 ========== */
+
+.glitch-rgb {
+  position: relative;
+  z-index: 1;
+}
+
+.glitch-rgb::before,
+.glitch-rgb::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* 红色通道 */
+.glitch-rgb::before {
+  animation: glitch-red 0.3s infinite;
+  color: #FF0000;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+/* 蓝色通道 */
+.glitch-rgb::after {
+  animation: glitch-blue 0.3s infinite reverse;
+  color: #00FFFF;
+  z-index: -2;
+  opacity: 0.8;
+}
+
+@keyframes glitch-red {
+  0%, 100% {
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+  20% {
+    transform: translate(-2px, 0);
+    clip-path: inset(10% 0 60% 0);
+  }
+  40% {
+    transform: translate(2px, 0);
+    clip-path: inset(60% 0 10% 0);
+  }
+  60% {
+    transform: translate(-1px, 0);
+    clip-path: inset(30% 0 40% 0);
+  }
+  80% {
+    transform: translate(1px, 0);
+    clip-path: inset(50% 0 20% 0);
+  }
+}
+
+@keyframes glitch-blue {
+  0%, 100% {
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+  25% {
+    transform: translate(2px, 0);
+    clip-path: inset(20% 0 50% 0);
+  }
+  50% {
+    transform: translate(-2px, 0);
+    clip-path: inset(50% 0 20% 0);
+  }
+  75% {
+    transform: translate(1px, 0);
+    clip-path: inset(40% 0 30% 0);
+  }
+}
+
+/* ========== 画面撕裂效果 ========== */
+
+.glitch-tear {
+  position: relative;
+}
+
+.glitch-tear::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  animation: tear-distortion 0.5s steps(8);
+}
+
+@keyframes tear-distortion {
+  0% {
+    clip-path: inset(0 0 95% 0);
+    transform: translateX(0);
+  }
+  10% {
+    clip-path: inset(10% 0 80% 0);
+    transform: translateX(-5px);
+  }
+  20% {
+    clip-path: inset(25% 0 65% 0);
+    transform: translateX(5px);
+  }
+  30% {
+    clip-path: inset(40% 0 50% 0);
+    transform: translateX(-3px);
+  }
+  40% {
+    clip-path: inset(55% 0 35% 0);
+    transform: translateX(7px);
+  }
+  50% {
+    clip-path: inset(70% 0 20% 0);
+    transform: translateX(-4px);
+  }
+  60% {
+    clip-path: inset(85% 0 5% 0);
+    transform: translateX(3px);
+  }
+  70%, 100% {
+    clip-path: inset(95% 0 0 0);
+    transform: translateX(0);
+  }
+}
+
+/* ========== 数字噪点干扰 ========== */
+
+.glitch-digital-noise {
+  position: relative;
+}
+
+.glitch-digital-noise::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 2px,
+      rgba(255, 255, 255, 0.02) 4px
+    );
+  animation: digital-noise 0.2s steps(10) infinite;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes digital-noise {
+  0% { opacity: 0.1; transform: translateX(0); }
+  25% { opacity: 0.15; transform: translateX(1px); }
+  50% { opacity: 0.08; transform: translateX(-1px); }
+  75% { opacity: 0.12; transform: translateX(0.5px); }
+  100% { opacity: 0.1; transform: translateX(-0.5px); }
+}
+
+/* ========== 信号丢失效果 ========== */
+
+.glitch-signal-loss {
+  animation: signal-loss 0.6s ease-in-out;
+}
+
+@keyframes signal-loss {
+  0%, 100% {
+    opacity: 1;
+    filter: none;
+  }
+  20% {
+    opacity: 0.3;
+    filter: contrast(2) brightness(0.5);
+  }
+  40% {
+    opacity: 0.8;
+    filter: contrast(0.5) brightness(1.5);
+  }
+  60% {
+    opacity: 0.1;
+    filter: grayscale(1) contrast(3);
+  }
+  80% {
+    opacity: 0.6;
+    filter: contrast(1.5) brightness(0.8);
+  }
+}
+
+/* ========== 扫描线跳跃效果 ========== */
+
+.glitch-scanline-jump {
+  animation: scanline-jump 0.4s linear;
+}
+
+@keyframes scanline-jump {
+  0%, 100% { transform: translateY(0); }
+  10% { transform: translateY(-5px); }
+  20% { transform: translateY(3px); }
+  30% { transform: translateY(-8px); }
+  40% { transform: translateY(4px); }
+  50% { transform: translateY(-2px); }
+  60% { transform: translateY(6px); }
+  70% { transform: translateY(-3px); }
+  80% { transform: translateY(2px); }
+  90% { transform: translateY(-1px); }
+}
+
+/* ========== 组合故障效果 ========== */
+
+/* 完整故障艺术效果 */
+.glitch-full {
+  animation:
+    strong-glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2,
+    scanline-jump 0.4s linear 0.4s;
+}
+
+/* ========== 触发式故障（单次） ========== */
+
+@keyframes glitch-trigger {
+  0% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+  5% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(90deg);
+  }
+  10% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(-90deg) contrast(1.5);
+  }
+  15% {
+    transform: translate(1px, 1px);
+    filter: brightness(1.3);
+  }
+  20% {
+    transform: translate(-1px, -1px);
+    filter: contrast(1.2);
+  }
+  25%, 100% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+}
+
+/* 触发类 */
+.glitch-trigger {
+  animation: glitch-trigger 0.3s ease-out;
+}
+
+/* ========== 性能优化 ========== */
+
+.glitch-weak,
+.glitch-strong,
+.glitch-rgb,
+.glitch-tear,
+.glitch-full,
+.glitch-trigger {
+  will-change: transform, filter, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ========== 移动端优化 ========== */
+@media (max-width: 768px) {
+  /* 降低抖动强度 */
+  @keyframes strong-glitch {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-1px, 1px); }
+  }
+
+  /* 禁用复杂效果 */
+  .glitch-rgb::before,
+  .glitch-rgb::after,
+  .glitch-tear::before,
+  .glitch-digital-noise::after {
+    display: none;
+  }
+}
+
+/* 用户偏好：减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  .glitch-weak,
+  .glitch-strong,
+  .glitch-rgb,
+  .glitch-tear,
+  .glitch-full,
+  .glitch-trigger {
+    animation: none !important;
+  }
+}

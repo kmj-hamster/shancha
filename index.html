@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burning Memory</title>
+  <link rel="stylesheet" href="../src/styles/fonts.css">
+  <link rel="stylesheet" href="../src/styles/main.css">
+  <link rel="stylesheet" href="../css/opening.css">
+  <link rel="stylesheet" href="../css/effects/deletion-animation.css">
+  <link rel="stylesheet" href="../css/glitch-overlay.css">
+  <link rel="stylesheet" href="../css/effects/boot-shutdown.css">
+  <link rel="stylesheet" href="../css/subtitle.css">
+  <link rel="stylesheet" href="../css/ending.css">
+  <!-- 语言选择界面样式 -->
+  <link rel="stylesheet" href="../css/lang-select.css">
+  <!-- CRT Theme - Loaded last to wrap everything -->
+  <link rel="stylesheet" href="../css/crt-theme.css">
+  <!-- 心电图面板字体：手写体 + 品牌铭牌 -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Ma+Shan+Zheng&family=Orbitron:wght@500&family=Noto+Serif+SC:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    /* 初始隐藏主界面 */
+    .app-container {
+      display: none;
+      opacity: 0;
+    }
+
+    .app-container.app-fade-in {
+      display: flex;
+      animation: app-fade-in 1s forwards;
+    }
+
+    @keyframes app-fade-in {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body class="theme-search">
+
+  <!-- 手机竖屏提示 -->
+  <div class="mobile-rotate-hint">
+    <div class="rotate-text-zh">请将设备旋转至横屏模式</div>
+    <div class="rotate-text-en">Please rotate your device to landscape</div>
+  </div>
+
+  <!-- CRT Monitor Wrapper -->
+  <div class="monitor-bezel">
+    <!-- ECG Panel - 心电图面板 -->
+    <div class="ecg-panel">
+      <div class="ecg-module">
+        <div class="ecg-screen">
+          <div class="ecg-grid"></div>
+          <canvas id="ecgCanvas"></canvas>
+        </div>
+        <div class="ecg-info">
+          <span class="ecg-label ecg-label-zh">患者 戈尔</span>
+          <span class="ecg-label ecg-label-en">Patient: Gregor</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand Plate - 品牌铭牌 -->
+    <div class="brand-plate">
+      <div class="brand-name">Mind Mirror</div>
+    </div>
+
+    <div class="crt-screen">
+
+      <!-- CRT Effect Layers -->
+      <div class="scanlines"></div>
+      <div class="glass-overlay"></div>
+      <div class="refresh-line"></div>
+
+      <!-- ========== 语言选择界面 ========== -->
+      <div class="lang-select-screen crt-active">
+        <div class="lang-select-frame">
+          <div class="lang-title">SELECT LANGUAGE</div>
+          <div class="lang-title-sub">选择语言</div>
+          <button class="lang-btn" data-lang="en">[  ENGLISH  ]</button>
+          <button class="lang-btn" data-lang="zh">[   中文    ]</button>
+        </div>
+      </div>
+
+      <!-- ========== 光敏性警告界面 ========== -->
+      <div class="warning-screen crt-active" style="display: none;">
+        <div class="warning-frame">
+          <div class="warning-title"></div>
+          <div class="warning-text"></div>
+        </div>
+      </div>
+
+      <!-- ========== 耳机建议界面 ========== -->
+      <div class="headphone-screen crt-active" style="display: none;">
+        <div class="headphone-frame">
+          <div class="headphone-icon">🎧</div>
+          <div class="headphone-text"></div>
+        </div>
+      </div>
+
+      <!-- ========== 开场界面 ========== -->
+      <div class="opening-screen crt-active" style="display: none;">
+        <div class="opening-frame">
+          <!-- 小标题 -->
+          <div class="opening-subtitle">It's just a</div>
+
+          <!-- ASCII Logo -->
+          <div class="opening-logo">
+            <pre class="ascii-art">
+██████╗ ██╗   ██╗██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗
+██╔══██╗██║   ██║██╔══██╗████╗  ██║██║████╗  ██║██╔════╝
+██████╔╝██║   ██║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗
+██╔══██╗██║   ██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║
+██████╔╝╚██████╔╝██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝
+╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝
+
+███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║
+╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
+            </pre>
+          </div>
+
+          <!-- 按钮组：Login + Language 并列 -->
+          <div class="opening-buttons">
+            <button class="opening-btn login-button">Login</button>
+            <button class="opening-btn back-to-lang-btn">Language</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 主应用容器 ========== -->
+      <div class="app-container app-hidden">
+
+        <!-- 左侧栏 -->
+        <div class="left-sidebar">
+          <!-- Tab切换 -->
+          <div class="tab-switch">
+            <span class="tab-btn active" data-type="memory">[MEMORY]</span>
+            <span class="tab-btn" data-type="file">[FILE]</span>
+            <span class="tab-btn" data-type="clue">[CLUE]</span>
+          </div>
+
+          <!-- 文件列表 -->
+          <div class="file-list">
+            <!-- Content populated by JS -->
+          </div>
+
+          <!-- 统计信息 -->
+          <div class="statistics">
+            <p>Discovered: <span class="stat-number">0</span></p>
+          </div>
+        </div>
+
+        <!-- 右侧区域 -->
+        <div class="right-area">
+          <!-- 卡片内容区 -->
+          <div class="card-content-area">
+            <!-- 标题栏 -->
+            <div class="title-bar">
+              <span class="card-filename"></span>
+              <span class="card-timestamp"></span>
+            </div>
+
+            <!-- 卡片内容滚动区 -->
+            <div class="card-scroll">
+              <!-- 文本内容区 -->
+              <div class="text-content">
+                <!-- Content populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 输入交互区 - 三段式布局 -->
+          <div class="input-area">
+            <!-- 系统输出区 -->
+            <div class="system-output">
+              <p class="output-line"></p>
+              <p class="output-line"></p>
+            </div>
+
+            <!-- 输入行 -->
+            <div class="input-line">
+              <span class="prompt">CAROL@TERMINAL:~$</span>
+              <input type="text" class="command-input" placeholder="" />
+              <span class="cursor-block"></span>
+            </div>
+
+            <!-- 状态按钮栏 -->
+            <div class="function-bar">
+              <span class="func-btn active" data-mode="search">[SEARCH]</span>
+              <span class="func-btn locked" data-mode="sort">[SORT]</span>
+              <span class="func-btn locked" data-mode="delete">[DELETE]</span>
+              <span class="func-btn" data-mode="reset">[RESET]</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- End of app-container -->
+
+    </div>
+  </div>
+  <!-- End of monitor-bezel -->
+
+  <!-- 重置确认弹窗 -->
+  <div class="reset-modal-overlay" id="resetModal">
+    <div class="reset-modal">
+      <div class="reset-modal-text">
+        <p class="reset-warning" id="resetWarningText"></p>
+      </div>
+      <div class="reset-modal-buttons">
+        <button class="reset-btn confirm" id="resetConfirmBtn">[CONFIRM]</button>
+        <button class="reset-btn cancel" id="resetCancelBtn">[CANCEL]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 开场界面脚本 -->
+  <script src="../js/effects/boot-controller.js"></script>
+  <script src="../js/lang-select.js"></script>
+  <script src="../js/opening.js"></script>
+
+  <!-- 加载游戏模块 -->
+  <!-- 音频管理器 - 必须最早加载 -->
+  <script src="../js/audio.js"></script>
+
+  <!-- 数据文件由 lang-select.js 根据语言动态加载 -->
+  <script src="../js/state.js"></script>
+  <script src="../js/cards.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/unlock.js"></script>
+  <script src="../js/render.js"></script>
+  <script src="../js/scramble.js"></script>
+  <script src="../js/memory-decay.js"></script>
+  <script src="../js/reading-lock.js"></script>
+
+  <!-- 删除动画系统 -->
+  <script src="../js/lib/powerglitch.min.js"></script>
+  <script src="../js/effects/deletion-controller.js"></script>
+
+  <!-- 字幕和结束界面系统 -->
+  <script src="../js/subtitle.js"></script>
+  <script src="../js/ending.js"></script>
+
+  <!-- 调试模式跳过开场（可选） -->
+  <script src="../js/debug-skip.js"></script>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/ecg.js"></script>
+
+  <!-- 初始化开场界面 -->
+  <script>
+    // 检测 URL 参数是否包含 skip=1
+    const urlParams = new URLSearchParams(window.location.search);
+    const skipOpeningByUrl = urlParams.get('skip') === '1';
+
+    // 调试模式跳过（优先级最高）
+    const debugSkip = window.DEBUG_SKIP_OPENING || skipOpeningByUrl;
+
+    if (debugSkip) {
+      // 调试模式：跳过所有开场流程
+      console.log('[Init] Debug skip mode enabled');
+      window.openingActive = false;
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        document.querySelector('.lang-select-screen')?.classList.add('hidden');
+        document.querySelector('.opening-screen').style.display = 'none';
+
+        // 加载游戏数据（使用已存储的语言或默认英文）
+        const lang = LangSelect.getCurrentLang();
+        console.log(`[Init] Debug: Loading ${lang} game data...`);
+        try {
+          await LangSelect.loadGameData(lang);
+        } catch (error) {
+          console.error('[Init] Failed to load game data:', error);
+          return;
+        }
+
+        const appContainer = document.querySelector('.app-container');
+        if (appContainer) {
+          appContainer.classList.remove('app-hidden');
+          appContainer.classList.add('app-fade-in');
+        }
+        console.log('[Init] Debug: Game starting directly...');
+      });
+    } else {
+      // 正常流程：检查语言和存档状态
+      const skipCondition = LangSelect.checkSkipCondition();
+      console.log('[Init] Skip condition:', skipCondition);
+
+      if (skipCondition.skip && skipCondition.skipOpening) {
+        // 有存档：跳过语言选择和Opening，直接进入游戏
+        console.log('[Init] Saved game detected, skipping to main game...');
+        // 【重要】先设置为 true，阻止 app.js 中的自动 initApp() 调用
+        // 等数据加载完成后再手动调用
+        window.openingActive = true;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+          document.querySelector('.lang-select-screen')?.classList.add('hidden');
+          document.querySelector('.opening-screen').style.display = 'none';
+
+          // 加载对应语言的游戏数据
+          const lang = skipCondition.lang;
+          console.log(`[Init] Loading ${lang} game data...`);
+          try {
+            await LangSelect.loadGameData(lang);
+          } catch (error) {
+            console.error('[Init] Failed to load game data:', error);
+            return;
+          }
+
+          // 数据加载完成，显示主界面
+          const appContainer = document.querySelector('.app-container');
+          if (appContainer) {
+            appContainer.classList.remove('app-hidden');
+            appContainer.classList.add('app-fade-in');
+          }
+
+          // 【关键】数据加载完成后，手动调用 initApp()
+          console.log('[Init] Game data loaded, initializing app...');
+          window.openingActive = false;
+          if (typeof initApp === 'function') {
+            initApp();
+          }
+
+          // 【存档恢复】启动背景音乐
+          if (window.audioManager) {
+            // 从存档读取BGM状态
+            let bgmToPlay = 'Atmosphere';  // 默认BGM
+            const savedState = localStorage.getItem('gameState');
+
+            if (savedState) {
+              try {
+                const state = JSON.parse(savedState);
+                // 优先使用存档中保存的BGM
+                if (state.current_bgm) {
+                  bgmToPlay = state.current_bgm;
+                }
+              } catch (e) {
+                console.warn('[Init] Failed to parse saved state for BGM selection');
+              }
+            }
+
+            console.log(`[Init] Will start BGM: ${bgmToPlay} (after user interaction)`);
+
+            // 浏览器自动播放限制：需要用户首次交互后才能播放
+            let bgmStarted = false;
+            const startBGM = () => {
+              if (bgmStarted) return;
+              bgmStarted = true;
+              console.log(`[Init] User interaction detected, starting ${bgmToPlay} BGM...`);
+              // Atmosphere 使用交叉淡入淡出循环播放，其他BGM普通播放
+              if (bgmToPlay === 'Atmosphere') {
+                audioManager.playMusicWithLoopFade('Atmosphere', 2000, 3000);  // 2秒初始淡入，3秒交叉淡入淡出
+              } else {
+                audioManager.playMusic(bgmToPlay, 1, 2000);  // 2秒淡入
+              }
+              // 清理监听器
+              document.removeEventListener('click', startBGM);
+              document.removeEventListener('keydown', startBGM);
+            };
+
+            document.addEventListener('click', startBGM, { once: true });
+            document.addEventListener('keydown', startBGM, { once: true });
+          }
+        });
+      } else if (skipCondition.skip && !skipCondition.skipOpening) {
+        // 有语言设置但无存档：跳过语言选择，显示Opening
+        console.log('[Init] Language selected, showing Opening...');
+        window.openingActive = true;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+          // 隐藏语言选择，显示Opening
+          document.querySelector('.lang-select-screen')?.classList.add('hidden');
+
+          // 先加载对应语言的游戏数据
+          const lang = skipCondition.lang;
+          console.log(`[Init] Loading ${lang} game data...`);
+          try {
+            await LangSelect.loadGameData(lang);
+          } catch (error) {
+            console.error('[Init] Failed to load game data:', error);
+            return;
+          }
+
+          // 设置body语言类名（用于opening界面的语言切换显示）
+          document.body.classList.remove('lang-zh', 'lang-en');
+          document.body.classList.add(`lang-${lang}`);
+
+          const openingScreen = document.querySelector('.opening-screen');
+          openingScreen.style.display = 'flex';
+
+          // 初始化Opening
+          const opening = new OpeningScreen({
+            fadeOutDuration: 1000,
+            bootDelay: 500,
+            onComplete: () => {
+              console.log('[Init] Opening completed, starting game...');
+              window.openingActive = false;
+              if (typeof initApp === 'function') {
+                initApp();
+              }
+            }
+          });
+          opening.init();
+        });
+      } else {
+        // 首次访问：显示语言选择界面
+        // 数据加载由 LangSelect.selectLanguage() 内部处理
+        console.log('[Init] First visit, showing language selection...');
+        window.openingActive = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+          // 语言选择界面默认显示，Opening默认隐藏
+
+          // 初始化语言选择
+          const langSelect = new LangSelect({
+            fadeOutDuration: 400,
+            onLanguageSelected: (lang) => {
+              console.log(`[Init] Language selected: ${lang}, initializing Opening...`);
+
+              // 初始化Opening（数据已在 selectLanguage 中加载）
+              const opening = new OpeningScreen({
+                fadeOutDuration: 1000,
+                bootDelay: 500,
+                onComplete: () => {
+                  console.log('[Init] Opening completed, starting game...');
+                  window.openingActive = false;
+                  if (typeof initApp === 'function') {
+                    initApp();
+                  }
+                }
+              });
+              opening.init();
+            }
+          });
+          langSelect.init();
+          console.log('[Init] Language selection screen ready');
+        });
+      }
+    }
+  </script>
+
+  <!-- 简单防护：禁用右键和开发者工具快捷键 -->
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' ||
+          (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
+          (e.ctrlKey && (e.key === 'U' || e.key === 'u')) ||
+          (e.ctrlKey && (e.key === 'S' || e.key === 's'))) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
+</body>
+
+</html>

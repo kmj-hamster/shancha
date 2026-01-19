@@ -1,0 +1,45 @@
+/* ====================================
+   Burning Memory - Font Definitions
+   ====================================
+   Fira Code Monospace Font Family
+   Zpix Pixel Font (Chinese)
+*/
+
+/* Zpix - 最像素中文字体 */
+@font-face {
+  font-family: 'Zpix';
+  src: url('../assets/fonts/zpix.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fira Code Regular */
+@font-face {
+  font-family: 'Fira Code';
+  src: url('../assets/fonts/FiraCode-Regular.woff2') format('woff2'),
+       url('../assets/fonts/FiraCode-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fira Code Medium */
+@font-face {
+  font-family: 'Fira Code';
+  src: url('../assets/fonts/FiraCode-Medium.woff2') format('woff2'),
+       url('../assets/fonts/FiraCode-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fira Code Bold */
+@font-face {
+  font-family: 'Fira Code';
+  src: url('../assets/fonts/FiraCode-Bold.woff2') format('woff2'),
+       url('../assets/fonts/FiraCode-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

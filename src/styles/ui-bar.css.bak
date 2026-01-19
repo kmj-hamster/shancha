@@ -1,0 +1,135 @@
+/* ui-bar.css - 左侧栏样式 */
+/* 参考：history\1017-UI设计\UI设计规范.md#二、左侧栏设计 */
+
+/* 文件列表容器 */
+#file-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+/* 文件列表项 */
+.file-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-left: 3px solid transparent;
+  margin-bottom: 4px;
+}
+
+.file-item a {
+  color: inherit;
+  text-decoration: none;
+  border: none;
+  display: block;
+}
+
+/* 文件状态颜色 */
+.file-item.read {
+  color: #FFFFFF; /* 已读：白色 */
+}
+
+.file-item.active {
+  color: #CCCCCC;
+  background-color: rgba(0, 255, 0, 0.1);
+  border-left-color: #00FF00;
+}
+
+.file-item.unread {
+  color: #3399FF; /* 未读：蓝色 */
+}
+
+.file-item.locked-yellow {
+  color: #FFFF00; /* 部分解锁：黄色 */
+  opacity: 0.8;
+}
+
+.file-item.locked-red {
+  color: #FF3333; /* 锁定：红色 */
+  opacity: 0.8;
+}
+
+.file-item:hover {
+  background-color: rgba(0, 255, 0, 0.05);
+}
+
+/* 线索列表 */
+.clue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clue-item {
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #00FF00;
+  border-left: 3px solid #00AA00;
+  transition: all 0.2s;
+}
+
+.clue-item:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  border-left-color: #00FF00;
+}
+
+.clue-item.used {
+  color: #888888;
+  opacity: 0.6;
+}
+
+.clue-item a {
+  color: inherit;
+  border: none;
+}
+
+/* 统计信息 */
+#statistics {
+  padding: 12px 10px;
+  text-align: center;
+  color: #33FF33;
+  border-top: 1px solid #00AA00;
+  border-bottom: 1px solid #00AA00;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.stat-label {
+  color: #CCCCCC;
+}
+
+.stat-value {
+  color: #00FF00;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Tab切换栏 */
+#tab-switch {
+  display: flex;
+  gap: 4px;
+  padding: 0;
+}
+
+#tab-switch button {
+  flex: 1;
+  background: none;
+  border: 1px solid #00AA00;
+  color: #CCCCCC;
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: all 0.2s;
+}
+
+#tab-switch button:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #00FF00;
+}
+
+#tab-switch button.active {
+  background-color: rgba(0, 255, 0, 0.15);
+  color: #00FF00;
+  border-color: #00FF00;
+}

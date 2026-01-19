@@ -1,0 +1,335 @@
+/**
+ * 开机/关机动画效果
+ * Boot and Shutdown Sequences
+ */
+
+/* ========== 开机序列样式 ========== */
+
+/* 开机屏幕容器 */
+.boot-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  color: #00FF00;
+  font-family: 'Zpix', 'Fira Code', 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 40px;
+}
+
+/* 开机信息容器 */
+.boot-container {
+  width: 100%;
+  max-width: 800px;
+  text-align: left;
+}
+
+/* 启动消息列表 */
+.boot-messages {
+  margin-bottom: 20px;
+}
+
+/* 单条启动消息 */
+.boot-text {
+  font-size: 18px;
+  line-height: 1.8;
+  margin: 6px 0;
+  opacity: 0;
+  animation: boot-text-appear 0.3s forwards;
+  text-shadow: 0 0 4px #00FF00;
+}
+
+@keyframes boot-text-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 开机光标 */
+.boot-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background: #00FF00;
+  box-shadow: 0 0 8px #00FF00;
+  animation: cursor-blink 0.8s infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* 开机屏幕淡出 */
+.boot-screen.fade-out {
+  animation: boot-fade-out 1s forwards;
+}
+
+@keyframes boot-fade-out {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+  100% {
+    opacity: 0;
+    filter: brightness(0);
+    pointer-events: none;
+  }
+}
+
+/* 扫描线进入效果 */
+.boot-screen.scanline-enter {
+  background: linear-gradient(
+    to bottom,
+    #000000 0%,
+    #000000 50%,
+    #001100 50%,
+    #000000 100%
+  );
+  background-size: 100% 4px;
+  animation: scanline-enter 0.8s forwards;
+}
+
+@keyframes scanline-enter {
+  from {
+    background-position: 0 -100%;
+  }
+  to {
+    background-position: 0 100%;
+  }
+}
+
+/* ========== 关机序列样式 ========== */
+
+/* 关机画面收缩效果 */
+.shutdown-active {
+  animation: shutdown-shrink 0.8s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  transform-origin: center center;
+}
+
+@keyframes shutdown-shrink {
+  0% {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+    filter: brightness(1) contrast(1);
+  }
+  30% {
+    opacity: 0.8;
+    filter: brightness(0.85) contrast(1.1);
+  }
+  60% {
+    transform: scaleY(0.03) scaleX(1);
+    opacity: 0.6;
+    filter: brightness(1.8) contrast(1.3);
+  }
+  80% {
+    transform: scaleY(0.01) scaleX(0.6);
+    opacity: 0.4;
+    filter: brightness(2.5) contrast(1.5);
+  }
+  100% {
+    transform: scaleY(0) scaleX(0.05);
+    opacity: 0;
+    filter: brightness(3) contrast(2);
+  }
+}
+
+/* 关机余辉光点 */
+.shutdown-glow {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #FFFFFF;
+  box-shadow:
+    0 0 40px 20px rgba(255, 255, 255, 0.8),
+    0 0 80px 40px rgba(0, 255, 0, 0.4);
+  transform: translate(-50%, -50%);
+  z-index: 10001;
+  animation: afterglow-fade 1.5s forwards;
+}
+
+@keyframes afterglow-fade {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 40px 20px rgba(255, 255, 255, 0.8),
+      0 0 80px 40px rgba(0, 255, 0, 0.4);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow:
+      0 0 30px 15px rgba(255, 255, 255, 0.5),
+      0 0 60px 30px rgba(0, 255, 0, 0.2);
+  }
+  100% {
+    opacity: 0;
+    box-shadow:
+      0 0 10px 5px rgba(255, 255, 255, 0),
+      0 0 20px 10px rgba(0, 255, 0, 0);
+  }
+}
+
+/* 关机黑屏覆盖层 */
+.shutdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shutdown-overlay.active {
+  animation: overlay-fade-in 0.5s forwards;
+}
+
+@keyframes overlay-fade-in {
+  to {
+    opacity: 1;
+    pointer-events: all;
+  }
+}
+
+/* ========== 开机前置效果 ========== */
+
+/* 电源按钮效果 */
+.power-button-effect {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border: 3px solid #00FF00;
+  border-radius: 50%;
+  z-index: 9999;
+  animation: power-button-pulse 1s forwards;
+}
+
+@keyframes power-button-pulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px #00FF00, inset 0 0 20px #00FF00;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+    box-shadow: 0 0 40px #00FF00, inset 0 0 40px #00FF00;
+  }
+}
+
+/* 电源启动音效可视化（可选） */
+.power-on-visual {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 2px solid #00FF00;
+  border-radius: 50%;
+  opacity: 0;
+  z-index: 9998;
+  animation: power-on-ripple 1.2s ease-out;
+}
+
+@keyframes power-on-ripple {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  20% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3);
+  }
+}
+
+/* ========== 状态样式 ========== */
+
+/* 隐藏主界面（用于开机/关机期间） */
+.app-hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* 主界面淡入（开机完成） */
+.app-fade-in {
+  animation: app-fade-in 0.6s forwards;
+}
+
+@keyframes app-fade-in {
+  from {
+    opacity: 0;
+    filter: brightness(1.3);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+/* 主界面准备关机 */
+.app-pre-shutdown {
+  animation: app-pre-shutdown 0.3s forwards;
+}
+
+@keyframes app-pre-shutdown {
+  to {
+    opacity: 0.3;
+    filter: brightness(0.7) contrast(0.8);
+  }
+}
+
+/* ========== 响应式调整 ========== */
+@media (max-width: 768px) {
+  .boot-screen {
+    padding: 20px;
+  }
+
+  .boot-text {
+    font-size: 16px;
+  }
+
+  .boot-cursor {
+    width: 8px;
+    height: 14px;
+  }
+}
+
+/* ========== 性能优化 ========== */
+.boot-screen,
+.shutdown-active,
+.shutdown-glow {
+  will-change: transform, opacity, filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

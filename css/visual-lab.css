@@ -1,0 +1,304 @@
+/**
+ * Visual Lab Styles
+ * 基于 gemini-test.html 和 V3 计划
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+    --phosphor-primary: #8aff8a;
+    /* 磷光绿 */
+    --phosphor-dim: #4e9c4e;
+    /* 暗部绿 */
+    --bg-screen: #051005;
+    /* 屏幕背景 */
+    --bezel-color: #222;
+    /* 外壳颜色 */
+}
+
+body {
+    background-color: #111;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'VT323', monospace;
+    color: var(--phosphor-primary);
+}
+
+/* ========== 1. 物理容器 (The Container) ========== */
+
+/* 显示器外壳 */
+.monitor-bezel {
+    width: 1024px;
+    height: 768px;
+    background: var(--bezel-color);
+    border-radius: 20px;
+    padding: 25px;
+    /* 边框厚度 */
+    box-shadow:
+        inset 0 0 2px rgba(255, 255, 255, 0.1),
+        /* 外壳高光 */
+        0 0 0 5px #1a1a1a,
+        /* 外壳边缘 */
+        0 20px 50px rgba(0, 0, 0, 0.8);
+    /* 投影 */
+    position: relative;
+}
+
+/* 屏幕区域 (曲面模拟) */
+.crt-screen {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-screen);
+    border-radius: 100px / 20px;
+    /* 模拟水平方向曲率较大 */
+    position: relative;
+    overflow: hidden;
+    /* 内部暗角 (Vignette) - 模拟球形厚度 */
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+
+    /* 3D 变换 (可选，增加立体感) */
+    /* transform: perspective(1000px) rotateX(0.5deg); */
+}
+
+/* ========== 2. 信号特效 (The Signal) ========== */
+
+/* 内容层 */
+.content-layer {
+    position: relative;
+    z-index: 5;
+    padding: 40px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    /* 文字辉光 (Bloom) */
+    text-shadow:
+        0 0 2px var(--phosphor-dim),
+        0 0 8px var(--phosphor-dim);
+
+    /* 稍微模糊，消除矢量锐利感 */
+    /* filter: blur(0.4px) contrast(1.2); */
+}
+
+/* 扫描线 (Scanlines) */
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0) 50%,
+            rgba(0, 0, 0, 0.3) 50%,
+            rgba(0, 0, 0, 0.3));
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.6;
+}
+
+/* 玻璃反光 (Glass Overlay) */
+.glass-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 径向渐变模拟反光 */
+    background: radial-gradient(circle at 30% 30%,
+            rgba(255, 255, 255, 0.08),
+            transparent 40%);
+    pointer-events: none;
+    z-index: 20;
+    mix-blend-mode: screen;
+}
+
+/* 刷新线动画 (Refresh Line) */
+.refresh-line {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0));
+    top: -100px;
+    left: 0;
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+    z-index: 15;
+}
+
+@keyframes scan {
+    0% {
+        top: -100px;
+    }
+
+    100% {
+        top: 120%;
+    }
+}
+
+/* ========== 3. 排版与布局 (Layout) ========== */
+
+/* 主布局容器 */
+.layout-grid {
+    display: flex;
+    gap: 40px;
+    height: 100%;
+}
+
+/* 左侧边栏 */
+.sidebar {
+    width: 220px;
+    border-right: 2px solid var(--phosphor-dim);
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sidebar-item {
+    padding: 2px 8px;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: all 0.1s;
+    font-size: 20px;
+}
+
+.sidebar-item:hover {
+    opacity: 1;
+    text-shadow: 0 0 8px var(--phosphor-primary);
+}
+
+/* 选中状态：实心反白 */
+.sidebar-item.active {
+    background-color: var(--phosphor-primary);
+    color: #000;
+    opacity: 1;
+    font-weight: bold;
+    box-shadow: 0 0 15px var(--phosphor-dim);
+    text-shadow: none;
+    /* 反白时不需要文字发光 */
+}
+
+/* 右侧内容区 */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* 隐藏原生滚动条 */
+}
+
+/* 文档区域：限制宽度 */
+.doc-viewer {
+    flex: 1;
+    max-width: 65ch;
+    /* 限制阅读宽度 */
+    overflow-y: auto;
+    /* 允许内部滚动 */
+    padding-right: 20px;
+
+    /* 隐藏滚动条样式 */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.doc-viewer::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.doc-header {
+    border-bottom: 1px dashed var(--phosphor-dim);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+.doc-body {
+    font-size: 22px;
+    line-height: 1.4;
+}
+
+.doc-body p {
+    margin-bottom: 1em;
+}
+
+/* 图片占位符 */
+.img-placeholder {
+    border: 2px dashed var(--phosphor-dim);
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    background: rgba(78, 156, 78, 0.1);
+}
+
+/* 底部输入行 */
+.command-deck {
+    margin-top: 20px;
+    border-top: 2px solid var(--phosphor-dim);
+    padding-top: 15px;
+    flex-shrink: 0;
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+}
+
+.prompt {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+/* 闪烁方块光标 */
+.cursor-block {
+    display: inline-block;
+    width: 12px;
+    height: 24px;
+    background-color: var(--phosphor-primary);
+    margin-left: 5px;
+    animation: blink 1s step-end infinite;
+    box-shadow: 0 0 8px var(--phosphor-primary);
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ========== 4. 辅助样式 ========== */
+.highlight {
+    color: #fff;
+    background: rgba(78, 156, 78, 0.3);
+    padding: 0 4px;
+}
+
+.clue {
+    border-bottom: 2px dotted var(--phosphor-primary);
+    cursor: pointer;
+}
+
+.clue:hover {
+    background: var(--phosphor-primary);
+    color: #000;
+    text-shadow: none;
+}

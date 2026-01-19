@@ -1,0 +1,489 @@
+/**
+ * 语言选择界面样式
+ * Language Selection Screen Styles
+ * 风格与 opening.css 保持一致（黑底绿字 CRT 风格）
+ */
+
+/* ========== 语言选择界面容器 ========== */
+.lang-select-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #051005;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6000; /* 高于 opening-screen 的 5000 */
+}
+
+.lang-select-screen.hidden {
+  display: none;
+}
+
+/* ========== 主框架 ========== */
+.lang-select-frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  position: relative;
+}
+
+/* ========== 标题 ========== */
+.lang-title {
+  font-size: 28px;
+  color: #00FF00;
+  margin-bottom: 12px;
+  letter-spacing: 4px;
+  font-weight: 500;
+  text-shadow:
+    0 0 5px #00FF00,
+    0 0 10px #00FF00;
+  font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
+}
+
+.lang-title-sub {
+  font-size: 24px;
+  color: #00FF00;
+  margin-bottom: 60px;
+  letter-spacing: 2px;
+  font-weight: 300;
+  text-shadow:
+    0 0 5px #00FF00,
+    0 0 10px #00FF00;
+  font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
+}
+
+/* ========== 语言按钮 ========== */
+.lang-btn {
+  display: block;
+  width: 280px;
+  padding: 18px 40px;
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
+  color: #00FF00;
+  background: transparent;
+  border: 2px solid #00FF00;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.lang-btn:last-child {
+  margin-bottom: 0;
+}
+
+.lang-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 255, 0, 0.1);
+  transition: left 0.3s ease;
+}
+
+.lang-btn:hover::before {
+  left: 0;
+}
+
+.lang-btn:hover {
+  background: rgba(0, 255, 0, 0.15);
+  box-shadow:
+    0 0 20px rgba(0, 255, 0, 0.5),
+    inset 0 0 20px rgba(0, 255, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.lang-btn:active {
+  transform: scale(0.97);
+  box-shadow:
+    0 0 10px rgba(0, 255, 0, 0.3),
+    inset 0 0 10px rgba(0, 255, 0, 0.2);
+  background: rgba(0, 255, 0, 0.25);
+}
+
+/* 按钮闪烁提示 */
+@keyframes lang-btn-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+  }
+}
+
+.lang-btn {
+  animation: lang-btn-pulse 2s ease-in-out infinite;
+}
+
+/* ========== CRT扫描线效果 ========== */
+.lang-select-screen.crt-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.08) 2px,
+    rgba(0, 255, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  animation: lang-scanline-flicker 2s infinite;
+}
+
+/* 动态扫描条 */
+.lang-select-screen.crt-active::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 255, 0, 0.15),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  pointer-events: none;
+  z-index: 11;
+  animation: lang-scanline-move 4s linear infinite;
+}
+
+@keyframes lang-scanline-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+@keyframes lang-scanline-move {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+/* ========== 淡出动画 ========== */
+.lang-select-screen.fade-out {
+  animation: lang-fade-out 0.4s forwards;
+}
+
+@keyframes lang-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ========== 淡入动画（返回时使用） ========== */
+.lang-select-screen.fade-in {
+  animation: lang-fade-in 0.5s forwards;
+}
+
+@keyframes lang-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .lang-title {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .lang-title-sub {
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+
+  .lang-btn {
+    width: 220px;
+    padding: 14px 30px;
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  /* 移动端禁用动态扫描条 */
+  .lang-select-screen.crt-active::after {
+    display: none;
+  }
+}
+
+/* ========== 性能优化 ========== */
+.lang-select-screen,
+.lang-select-frame,
+.lang-btn {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ========================================================
+   警告界面和耳机建议界面样式
+   Warning Screen & Headphone Screen Styles
+   ======================================================== */
+
+/* ========== 警告界面容器 ========== */
+.warning-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #051005;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5800; /* 高于 opening (5000)，略低于 lang-select (6000) */
+}
+
+.warning-screen.hidden {
+  display: none;
+}
+
+.warning-frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  max-width: 800px;
+  text-align: center;
+}
+
+.warning-title {
+  font-size: 36px;
+  color: #00FF00;
+  margin-bottom: 40px;
+  letter-spacing: 8px;
+  font-weight: 700;
+  text-shadow:
+    0 0 10px #00FF00,
+    0 0 20px #00FF00,
+    0 0 30px #00FF00;
+  font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
+  animation: warning-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes warning-pulse {
+  0%, 100% {
+    opacity: 1;
+    text-shadow:
+      0 0 10px #00FF00,
+      0 0 20px #00FF00,
+      0 0 30px #00FF00;
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow:
+      0 0 5px #00FF00,
+      0 0 10px #00FF00;
+  }
+}
+
+.warning-text {
+  font-size: 18px;
+  color: #00FF00;
+  line-height: 1.8;
+  letter-spacing: 1px;
+  font-weight: 400;
+  text-shadow:
+    0 0 5px #00FF00;
+  font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
+  opacity: 0.9;
+}
+
+/* ========== 耳机建议界面容器 ========== */
+.headphone-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #051005;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5700; /* 高于 opening (5000)，略低于 warning (5800) */
+}
+
+.headphone-screen.hidden {
+  display: none;
+}
+
+.headphone-frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  max-width: 700px;
+  text-align: center;
+}
+
+.headphone-icon {
+  font-size: 72px;
+  margin-bottom: 40px;
+  animation: headphone-glow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px #00FF00);
+}
+
+@keyframes headphone-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px #00FF00) drop-shadow(0 0 20px #00FF00);
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px #00FF00) drop-shadow(0 0 30px #00FF00);
+    transform: scale(1.05);
+  }
+}
+
+.headphone-text {
+  font-size: 20px;
+  color: #00FF00;
+  line-height: 1.8;
+  letter-spacing: 2px;
+  font-weight: 400;
+  text-shadow:
+    0 0 5px #00FF00,
+    0 0 10px #00FF00;
+  font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
+}
+
+/* ========== 警告/耳机界面 CRT 扫描线效果 ========== */
+.warning-screen.crt-active::before,
+.headphone-screen.crt-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.08) 2px,
+    rgba(0, 255, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  animation: lang-scanline-flicker 2s infinite;
+}
+
+/* 动态扫描条 */
+.warning-screen.crt-active::after,
+.headphone-screen.crt-active::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 255, 0, 0.15),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  pointer-events: none;
+  z-index: 11;
+  animation: lang-scanline-move 4s linear infinite;
+}
+
+/* ========== 淡出动画 ========== */
+.warning-screen.fade-out,
+.headphone-screen.fade-out {
+  animation: warning-fade-out 0.4s forwards;
+}
+
+@keyframes warning-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ========== 淡入动画 ========== */
+.warning-screen.fade-in,
+.headphone-screen.fade-in {
+  animation: warning-fade-in 0.4s forwards;
+}
+
+@keyframes warning-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .warning-title {
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+
+  .warning-text {
+    font-size: 14px;
+    padding: 0 20px;
+  }
+
+  .headphone-icon {
+    font-size: 48px;
+  }
+
+  .headphone-text {
+    font-size: 16px;
+    padding: 0 20px;
+  }
+
+  .warning-frame,
+  .headphone-frame {
+    padding: 40px 20px;
+  }
+
+  /* 移动端禁用动态扫描条 */
+  .warning-screen.crt-active::after,
+  .headphone-screen.crt-active::after {
+    display: none;
+  }
+}
+
+/* ========== 性能优化 ========== */
+.warning-screen,
+.warning-frame,
+.headphone-screen,
+.headphone-frame {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

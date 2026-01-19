@@ -1,0 +1,287 @@
+/**
+ * Glitch Overlay Effect - 故障遮罩效果
+ * 纯CSS实现，不破坏DOM结构
+ */
+
+.glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+}
+
+/* 激活时的动画 */
+.glitch-overlay.active {
+    animation: glitch-overlay-fade 0.5s ease-out forwards;
+}
+
+/* 主遮罩淡入淡出 */
+@keyframes glitch-overlay-fade {
+    0% {
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* RGB分离层 - 红色通道 */
+.glitch-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 0, 0, 0.1);
+    mix-blend-mode: screen;
+    animation: glitch-shift-red 0.5s steps(2) infinite;
+}
+
+/* RGB分离层 - 蓝色通道 */
+.glitch-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 255, 0.1);
+    mix-blend-mode: screen;
+    animation: glitch-shift-blue 0.5s steps(2) infinite;
+}
+
+/* 红色通道偏移 */
+@keyframes glitch-shift-red {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(-3px, 2px);
+    }
+    50% {
+        transform: translate(2px, -1px);
+    }
+    75% {
+        transform: translate(-1px, 3px);
+    }
+}
+
+/* 蓝色通道偏移 */
+@keyframes glitch-shift-blue {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(3px, -2px);
+    }
+    50% {
+        transform: translate(-2px, 1px);
+    }
+    75% {
+        transform: translate(1px, -3px);
+    }
+}
+
+/* 扫描线效果 */
+.glitch-overlay .scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.1) 0px,
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    animation: glitch-scanlines 0.5s linear infinite;
+}
+
+@keyframes glitch-scanlines {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(4px);
+    }
+}
+
+/* 随机条纹 */
+.glitch-overlay .stripes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 40%,
+        rgba(255, 255, 255, 0.05) 40%,
+        rgba(255, 255, 255, 0.05) 45%,
+        transparent 45%,
+        transparent 60%,
+        rgba(255, 255, 255, 0.03) 60%,
+        rgba(255, 255, 255, 0.03) 63%,
+        transparent 63%
+    );
+    animation: glitch-stripes 0.5s steps(3) infinite;
+}
+
+@keyframes glitch-stripes {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    33% {
+        transform: translateX(-20px);
+    }
+    66% {
+        transform: translateX(20px);
+    }
+}
+
+/* 随机闪烁块 */
+.glitch-overlay .blocks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch-overlay .block {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    animation: glitch-block 0.5s steps(2) infinite;
+}
+
+/* 不同位置的闪烁块 */
+.glitch-overlay .block:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    width: 15%;
+    height: 3%;
+    animation-delay: 0ms;
+}
+
+.glitch-overlay .block:nth-child(2) {
+    top: 30%;
+    left: 50%;
+    width: 20%;
+    height: 5%;
+    animation-delay: 100ms;
+}
+
+.glitch-overlay .block:nth-child(3) {
+    top: 60%;
+    left: 10%;
+    width: 25%;
+    height: 2%;
+    animation-delay: 200ms;
+}
+
+.glitch-overlay .block:nth-child(4) {
+    top: 80%;
+    left: 60%;
+    width: 18%;
+    height: 4%;
+    animation-delay: 150ms;
+}
+
+@keyframes glitch-block {
+    0%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-10px);
+    }
+}
+
+/* 色彩失真 */
+.glitch-overlay .chromatic {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 50% 50%,
+        transparent 0%,
+        rgba(255, 0, 255, 0.05) 50%,
+        rgba(0, 255, 255, 0.05) 100%
+    );
+    animation: glitch-chromatic 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes glitch-chromatic {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        filter: hue-rotate(30deg);
+    }
+}
+
+/* 黑色故障条带 */
+.glitch-overlay .dark-bands {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        0deg,
+        transparent 0%,
+        transparent 20%,
+        rgba(0, 0, 0, 0.4) 20%,
+        rgba(0, 0, 0, 0.4) 23%,
+        transparent 23%,
+        transparent 45%,
+        rgba(0, 0, 0, 0.5) 45%,
+        rgba(0, 0, 0, 0.5) 49%,
+        transparent 49%,
+        transparent 75%,
+        rgba(0, 0, 0, 0.35) 75%,
+        rgba(0, 0, 0, 0.35) 78%,
+        transparent 78%
+    );
+    animation: glitch-dark-bands 0.5s steps(3) infinite;
+}
+
+@keyframes glitch-dark-bands {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.8;
+    }
+    33% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+    66% {
+        transform: translateY(15px);
+        opacity: 0.9;
+    }
+}
+
+/* 整体抖动 */
+.glitch-overlay.active .scanlines,
+.glitch-overlay.active .stripes,
+.glitch-overlay.active .chromatic,
+.glitch-overlay.active .dark-bands {
+    animation-play-state: running;
+}

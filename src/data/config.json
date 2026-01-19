@@ -1,0 +1,63 @@
+{
+  "game": {
+    "title": "Burning Memory",
+    "version": "0.1.0",
+    "initial_card": "card_001"
+  },
+  "ui": {
+    "typewriter_speed": 50,
+    "typewriter_skippable": true,
+    "cursor_blink_interval": 500,
+    "enable_scanline": false,
+    "enable_crt_glow": true
+  },
+  "colors": {
+    "bg_black": "#000000",
+    "terminal_green": "#00FF00",
+    "soft_green": "#33FF33",
+    "dark_green": "#00AA00",
+    "alert_blue": "#3399FF",
+    "error_red": "#FF3333",
+    "light_gray": "#CCCCCC"
+  },
+  "layout": {
+    "sidebar_width": "25%",
+    "content_height": "70%",
+    "input_height": "30%",
+    "command_help_width": "20%"
+  },
+  "commands": [
+    {
+      "command": "/search clues",
+      "description": "Search available clues"
+    },
+    {
+      "command": "/search [keyword]",
+      "description": "Search for a specific keyword"
+    },
+    {
+      "command": "/read [filename]",
+      "description": "Read a specific file"
+    },
+    {
+      "command": "/list",
+      "description": "List all unlocked files"
+    },
+    {
+      "command": "/help",
+      "description": "Show help information"
+    },
+    {
+      "command": "/clear",
+      "description": "Clear the console"
+    }
+  ],
+  "messages": {
+    "welcome": "Welcome to Burning Memory.\nType /help for available commands.\n\n>",
+    "search_success": "Search successful! Unlocked {memory_count} memories, {file_count} files.",
+    "search_no_results": "No results found for '{keyword}'.",
+    "file_not_found": "File '{filename}' not found.",
+    "file_locked": "File '{filename}' is locked.",
+    "help_info": "Available commands:\n/search clues - Search clues\n/search [keyword] - Search keyword\n/read [filename] - Read file\n/list - List files\n/clear - Clear screen\n/help - Show this help"
+  }
+}

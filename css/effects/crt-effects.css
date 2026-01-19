@@ -1,0 +1,302 @@
+/**
+ * CRT显示器效果包 - 完整实现
+ * 包含：扫描线、曲面、辉光、噪点、闪烁
+ */
+
+/* ========== CSS变量配置 ========== */
+:root {
+  /* CRT效果强度配置 */
+  --crt-scanline-opacity: 0.08;       /* 扫描线透明度 */
+  --crt-scanline-height: 3px;         /* 扫描线高度 */
+  --crt-curvature: 0.015;             /* 屏幕曲面程度 */
+  --crt-glow-intensity: 0.15;         /* 辉光强度 */
+  --crt-noise-opacity: 0.03;          /* 噪点透明度 */
+  --crt-flicker-speed: 3s;            /* 闪烁速度 */
+  --crt-primary-color: #00FF00;       /* 主色调 */
+  /* 扫描线和辉光颜色（跟随主题） */
+  --crt-scanline-color: rgba(0, 255, 0, 0.08);
+  --crt-scanline-glow: rgba(0, 255, 0, 0.12);
+  --crt-scanline-shadow: rgba(0, 255, 0, 0.3);
+  --crt-glow-color: rgba(0, 255, 0, 0.15);
+  --crt-glow-strong: rgba(0, 255, 0, 0.4);
+  --crt-glow-weak: rgba(0, 255, 0, 0.2);
+}
+
+/* ========== 基础CRT容器 ========== */
+.crt-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========== 扫描线效果 ========== */
+
+/* 静态水平扫描线 */
+.crt-scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--crt-scanline-color) 2px,
+    var(--crt-scanline-color) var(--crt-scanline-height)
+  );
+  pointer-events: none;
+  z-index: 1000;
+  animation: scanline-flicker var(--crt-flicker-speed) infinite;
+}
+
+/* 扫描线微弱闪烁 */
+@keyframes scanline-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+/* 动态扫描条（从上到下移动） */
+.crt-scanlines::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--crt-scanline-glow),
+    transparent
+  );
+  box-shadow: 0 0 20px var(--crt-scanline-shadow);
+  pointer-events: none;
+  z-index: 1001;
+  animation: scanline-move 4s linear infinite;
+}
+
+@keyframes scanline-move {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+/* ========== CRT屏幕曲面效果 ========== */
+.crt-curvature {
+  border-radius: 4px; /* 轻微圆角 */
+  position: relative;
+}
+
+/* 边缘暗角（模拟CRT边缘亮度降低） */
+.crt-curvature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ========== 荧光管辉光效果 ========== */
+.crt-glow {
+  text-shadow:
+    0 0 2px var(--crt-primary-color),
+    0 0 4px var(--crt-primary-color),
+    0 0 6px var(--crt-glow-color);
+}
+
+/* 增强辉光（用于重要元素） */
+.crt-glow-strong {
+  text-shadow:
+    0 0 4px var(--crt-primary-color),
+    0 0 8px var(--crt-primary-color),
+    0 0 12px var(--crt-glow-strong),
+    0 0 16px var(--crt-glow-weak);
+}
+
+/* ========== 像素噪点效果 ========== */
+.crt-noise {
+  position: relative;
+}
+
+.crt-noise::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: var(--crt-noise-opacity);
+  pointer-events: none;
+  z-index: 1002;
+  animation: noise-anim 0.2s infinite;
+}
+
+@keyframes noise-anim {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-1%, -1%); }
+  20% { transform: translate(1%, 1%); }
+  30% { transform: translate(-1%, 1%); }
+  40% { transform: translate(1%, -1%); }
+  50% { transform: translate(-1%, 0); }
+  60% { transform: translate(1%, 0); }
+  70% { transform: translate(0, -1%); }
+  80% { transform: translate(0, 1%); }
+  90% { transform: translate(-1%, -1%); }
+}
+
+/* ========== 屏幕闪烁效果 ========== */
+.crt-flicker {
+  animation: crt-flicker-anim 4s infinite;
+}
+
+@keyframes crt-flicker-anim {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1) contrast(1);
+  }
+  50% {
+    opacity: 0.97;
+    filter: brightness(0.98) contrast(1.02);
+  }
+  60% {
+    opacity: 0.99;
+    filter: brightness(1.01) contrast(0.99);
+  }
+}
+
+/* ========== RGB色差效果（轻微） ========== */
+.crt-chromatic {
+  position: relative;
+}
+
+.crt-chromatic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.02),
+    transparent,
+    rgba(0, 0, 255, 0.02)
+  );
+  pointer-events: none;
+  z-index: 998;
+}
+
+/* ========== 电流不稳定效果 ========== */
+.crt-power-unstable {
+  animation: power-fluctuation 8s infinite;
+}
+
+@keyframes power-fluctuation {
+  0%, 90%, 100% {
+    filter: brightness(1) contrast(1);
+  }
+  92% {
+    filter: brightness(0.85) contrast(1.1);
+  }
+  94% {
+    filter: brightness(1.05) contrast(0.95);
+  }
+  96% {
+    filter: brightness(0.9) contrast(1.05);
+  }
+  98% {
+    filter: brightness(1.02) contrast(0.98);
+  }
+}
+
+/* ========== 组合效果类 ========== */
+
+/* 完整CRT效果（推荐默认使用） */
+.crt-full {
+  /* 组合所有效果 */
+}
+
+.crt-full,
+.crt-full * {
+  /* 继承所有CRT效果 */
+}
+
+/* 为.crt-full添加所有效果 */
+.crt-full.crt-container {
+  /* 已经定义 */
+}
+
+/* ========== 性能优化 ========== */
+
+/* GPU加速 */
+.crt-container,
+.crt-scanlines::before,
+.crt-scanlines::after,
+.crt-noise::after {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  /* 禁用动态扫描条和噪点 */
+  .crt-scanlines::after,
+  .crt-noise::after {
+    display: none;
+  }
+
+  /* 降低扫描线密度 */
+  :root {
+    --crt-scanline-height: 4px;
+  }
+}
+
+/* 用户偏好：减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  .crt-scanlines::before,
+  .crt-scanlines::after,
+  .crt-flicker,
+  .crt-noise::after,
+  .crt-power-unstable {
+    animation: none !important;
+  }
+}
+
+/* ========== 强度调节类 ========== */
+
+/* 低强度CRT效果 */
+.crt-subtle {
+  --crt-scanline-opacity: 0.04;
+  --crt-glow-intensity: 0.08;
+  --crt-noise-opacity: 0.015;
+}
+
+/* 高强度CRT效果 */
+.crt-intense {
+  --crt-scanline-opacity: 0.12;
+  --crt-glow-intensity: 0.25;
+  --crt-noise-opacity: 0.05;
+}
+
+/* ========== 辅助工具类 ========== */
+
+/* 禁用所有CRT效果 */
+.crt-disabled,
+.crt-disabled::before,
+.crt-disabled::after {
+  animation: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  background: none !important;
+}

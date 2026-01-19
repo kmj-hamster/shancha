@@ -1,0 +1,505 @@
+/**
+ * CRT Theme - Main Game Integration (Layout Adjusted)
+ * 策略：Wrapper Only + Fixed Width + Thicker Border
+ */
+
+/* VT323 等宽复古字体 */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+    --bezel-color: #222;
+    --bg-screen: #031205;
+    /* --phosphor-primary 和 --phosphor-dim 由 main.css 主题系统控制 */
+}
+
+/* 覆盖 body 样式，使其成为黑暗房间背景，并居中显示器 */
+body {
+    background-color: #080808 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-family: 'VT323', 'Zpix', monospace !important;
+}
+
+/* ========== 1. 物理容器 (The Container) ========== */
+
+/* 显示器外壳 - 调整尺寸和边框 */
+.monitor-bezel {
+    position: relative;
+    width: 1390px;
+    /* 增加宽度以容纳右侧心电图面板 */
+    height: 95vh;
+    /* 保持高度 */
+    max-width: 98vw;
+    /* 防止在小屏幕溢出 */
+    background: var(--bezel-color);
+    border-radius: 30px;
+    /* 稍微增加圆角 */
+    padding: 50px 220px 50px 70px;
+    /* 非对称边框：上 右 下 左 */
+    box-shadow:
+        inset 0 0 2px rgba(255, 255, 255, 0.1),
+        0 0 0 5px #1a1a1a,
+        0 20px 50px rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 屏幕区域 */
+.crt-screen {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-screen);
+    border-radius: 100px / 10px;
+    /* 曲率 */
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+    /* 内部暗角 */
+}
+
+/* ========== 2. 适配原有容器 (Wrapper Strategy) ========== */
+
+/* 强制覆盖 app-container 样式，使其填满 CRT 屏幕 */
+.app-container {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    /* 移除原有的绿色边框 */
+    margin: 0 !important;
+    padding: 15px 25px !important;
+    /* 内边距让内容远离曲面边缘 */
+    box-sizing: border-box !important;
+    position: relative;
+    z-index: 5;
+    background-color: var(--bg-screen) !important;
+    /* 暗绿色背景，与内部一致 */
+}
+
+/* 调整内部比例，适配较窄的容器 */
+.left-sidebar {
+    width: 25% !important;
+    /* 增加比例以保持视觉宽度 */
+}
+
+.right-area {
+    width: 75% !important;
+    /* 减小比例 */
+}
+
+/* 同样适配 opening-screen */
+.opening-screen {
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 20;
+    /* 在 app-container 之上 */
+    background-color: var(--bg-screen) !important;
+}
+
+/* ========== 3. 信号特效 (The Signal) ========== */
+
+/* 扫描线 - 使用主题颜色 */
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            transparent,
+            transparent 50%,
+            rgba(0, 0, 0, 0.15) 50%,
+            rgba(0, 0, 0, 0.15));
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.5;
+}
+
+/* 玻璃反光 */
+.glass-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%,
+            rgba(255, 255, 255, 0.05),
+            transparent 40%);
+    pointer-events: none;
+    z-index: 60;
+    mix-blend-mode: screen;
+}
+
+/* 刷新线动画 - 使用主题颜色 */
+.refresh-line {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to bottom,
+            transparent,
+            var(--phosphor-dim),
+            transparent);
+    opacity: 0.15;
+    top: -100px;
+    left: 0;
+    animation: scan 10s linear infinite;
+    pointer-events: none;
+    z-index: 55;
+}
+
+@keyframes scan {
+    0% {
+        top: -100px;
+    }
+
+    100% {
+        top: 120%;
+    }
+}
+
+/* ========== 4. 视觉增强 (Glow & Typography) ========== */
+
+/* 全局文字辉光 - 双重发光模拟荧光管效果 */
+.app-container,
+.opening-screen {
+    text-shadow:
+        0 0 2px var(--phosphor-dim),
+        0 0 8px var(--phosphor-dim);
+    transition: text-shadow 0.3s ease;
+}
+
+/* 滚动条隐藏 (为了沉浸感) */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+/* ========== 5. 线条优化 (Line Optimization) ========== */
+
+/* 移除左侧栏内部的水平分割线 */
+.file-list,
+.tab-switch,
+.statistics,
+.title-bar,
+.feedback-area {
+    border-bottom: none !important;
+}
+
+/* P5 例外：标题栏有内容时显示虚线分割线 */
+.title-bar.has-content {
+    border-bottom: 2px dashed var(--phosphor-dim) !important;
+}
+
+.input-box-area {
+    border-right: none !important;
+}
+
+/* 左侧栏垂直分割线 - 字符样式 (Dashed模拟) */
+.left-sidebar {
+    border-right: 2px dashed var(--phosphor-dim) !important;
+}
+
+/* ========== 6. 心电图面板 (ECG Panel) ========== */
+
+/* 心电图面板容器 - 绝对定位在右侧边框区域 */
+.ecg-panel {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 100;
+}
+
+/* 心电图模块 - 移除外壳，透明容器 */
+.ecg-module {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* 心电图屏幕 - 圆角过渡，与主屏幕背景一致 */
+.ecg-screen {
+    background-color: var(--bg-screen);
+    border: none;
+    border-radius: 15px;
+    height: 120px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+/* 心电图网格背景 - 已禁用 */
+.ecg-grid {
+    display: none;
+}
+
+/* Canvas 填满屏幕 */
+.ecg-screen canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* 心电图信息栏 */
+.ecg-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+/* 便签样式 - 纱布/旧纸质感 */
+.ecg-label {
+    background: linear-gradient(135deg,
+        #f5f5f0 0%,
+        #e8e8e0 50%,
+        #f0f0e8 100%);
+    padding: 8px 12px;
+    border: none;
+    box-shadow:
+        2px 2px 4px rgba(0,0,0,0.3),
+        inset 0 0 10px rgba(0,0,0,0.05);
+    transform: rotate(-2deg);
+    font-family: 'Caveat', 'Ma Shan Zheng', cursive;
+    font-size: 14px;
+    color: #1a1a1a;
+    line-height: 1.4;
+    text-shadow: none;
+}
+
+/* 语言切换 - 默认隐藏所有语言标签 */
+.ecg-label-zh,
+.ecg-label-en {
+    display: none;
+}
+
+/* 中文模式显示中文标签 */
+body.lang-zh .ecg-label-zh {
+    display: inline-block;
+}
+
+/* 英文模式显示英文标签 */
+body.lang-en .ecg-label-en {
+    display: inline-block;
+}
+
+/* ========== 品牌铭牌 ========== */
+.brand-plate {
+    position: absolute;
+    bottom: 50px;
+    right: 10px;
+    width: 200px;
+    text-align: center;
+    padding: 15px 10px;
+}
+
+.brand-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    color: #555;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow:
+        1px 1px 0 #222,
+        -1px -1px 0 #444;
+}
+
+.brand-name-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 12px;
+    color: #444;
+    letter-spacing: 6px;
+    margin-top: 4px;
+}
+
+/* 响应式：小屏幕隐藏心电图 */
+@media (max-width: 1200px) {
+    .ecg-panel {
+        display: none;
+    }
+    .monitor-bezel {
+        width: 1200px;
+        padding: 50px;
+    }
+}
+
+/* ========== 7. 手机横屏适配 (Mobile Landscape) ========== */
+
+/* 检测手机横屏：宽度 ≤ 932px（iPhone 15 Pro Max 横屏）且高度 ≤ 500px */
+@media (max-width: 932px) and (max-height: 500px) and (orientation: landscape) {
+    /* 隐藏灰色边框，内容全屏 */
+    .monitor-bezel {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* CRT 屏幕占满全部空间 */
+    .crt-screen {
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* 隐藏装饰元素 */
+    .ecg-panel,
+    .brand-plate {
+        display: none !important;
+    }
+
+    /* 减小内边距，利用更多空间 */
+    .app-container {
+        padding: 8px 12px !important;
+    }
+
+    /* 输入区自适应高度 */
+    .input-area {
+        min-height: auto !important;
+        padding: 6px 12px !important;
+    }
+
+    /* System 输出区只显示1行（利用高度裁剪，配合 justify-content: flex-end） */
+    .system-output {
+        min-height: auto !important;
+        height: 28px !important;
+        flex: 0 0 auto !important;
+        overflow: hidden !important;
+    }
+
+    /* 标签栏靠左，间距紧凑 */
+    .tab-switch {
+        justify-content: flex-start !important;
+        gap: 4px !important;
+        padding-left: 4px !important;
+        padding-right: 8px !important;
+    }
+
+    /* 选中标签发光效果减小 */
+    .tab-btn.active {
+        box-shadow: 0 0 6px var(--phosphor-dim, #4e9c4e) !important;
+    }
+
+    /* 输出行紧凑化 */
+    .output-line {
+        font-size: 18px !important;
+        margin: 0 !important;
+        line-height: 1.3 !important;
+    }
+
+    /* 手机横屏只显示最新的1条系统消息 */
+    .system-output .output-line:first-child {
+        display: none !important;
+    }
+
+    /* 输入行紧凑化 */
+    .input-line {
+        padding: 4px 0 !important;
+        font-size: 18px !important;
+    }
+
+    .prompt {
+        font-size: 18px !important;
+    }
+
+    .command-input {
+        font-size: 18px !important;
+    }
+
+    /* 功能按钮栏紧凑化 */
+    .function-bar {
+        padding: 2px 0 !important;
+        gap: 8px !important;
+    }
+
+    .func-btn {
+        font-size: 16px !important;
+        padding: 2px 8px !important;
+    }
+}
+
+/* 手机竖屏提示：请旋转设备 */
+.mobile-rotate-hint {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #080808;
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--phosphor-primary, #48a04e);
+    font-family: 'VT323', 'Zpix', monospace;
+    font-size: 24px;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 根据语言显示对应文字 */
+.mobile-rotate-hint .rotate-text-zh,
+.mobile-rotate-hint .rotate-text-en {
+    display: none;
+    line-height: 1.6;
+}
+
+/* 默认显示双语 */
+.mobile-rotate-hint .rotate-text-zh {
+    display: block;
+}
+.mobile-rotate-hint .rotate-text-en {
+    display: block;
+    font-size: 18px;
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+/* 中文模式只显示中文 */
+body.lang-zh .mobile-rotate-hint .rotate-text-en {
+    display: none;
+}
+
+/* 英文模式只显示英文 */
+body.lang-en .mobile-rotate-hint .rotate-text-zh {
+    display: none;
+}
+body.lang-en .mobile-rotate-hint .rotate-text-en {
+    display: block;
+    font-size: 24px;
+    opacity: 1;
+}
+
+/* 手机竖屏时显示提示 */
+@media (max-width: 500px) and (orientation: portrait) {
+    .mobile-rotate-hint {
+        display: flex;
+    }
+
+    .monitor-bezel {
+        display: none;
+    }
+}

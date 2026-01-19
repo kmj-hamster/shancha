@@ -1,0 +1,226 @@
+/**
+ * 自动连续显示功能样式
+ * 用于文字段落的自动逐行播放效果
+ */
+
+/* ============ 自动播放指示器 ============ */
+.auto-play-indicator {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    color: #888;
+    font-size: 12px;
+    font-family: 'Fira Code', monospace;
+    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #333;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite;
+    z-index: 10;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ============ 自动播放容器状态 ============ */
+.text-content.auto-playing {
+    position: relative;
+}
+
+.text-content-container.auto-playing {
+    position: relative;
+}
+
+/* ============ 自动显示段落动画 ============ */
+.content-paragraph.auto-displayed {
+    opacity: 0;
+    animation: autoFadeIn 0.3s ease-out forwards;
+}
+
+.auto-sequence-fade-in {
+    animation: slideInFade 0.3s ease-out forwards;
+}
+
+@keyframes autoFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFade {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+        filter: blur(2px);
+    }
+    50% {
+        opacity: 0.5;
+        filter: blur(1px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* ============ 自动序列占位符（调试用，正常隐藏） ============ */
+.auto-sequence-placeholder {
+    display: none;
+}
+
+/* ============ 记忆闪回效果（配合auto_sequence使用） ============ */
+.content-paragraph.auto-displayed[data-style="memory"] {
+    color: #ffaa00;
+    text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+    animation: memoryFlash 0.5s ease-out forwards;
+}
+
+@keyframes memoryFlash {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+        filter: blur(4px);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(5px) scale(0.98);
+        filter: blur(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* ============ 系统日志效果（配合auto_sequence使用） ============ */
+.content-paragraph.auto-displayed[data-style="system"] {
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    background: linear-gradient(90deg,
+        rgba(0, 255, 0, 0.1) 0%,
+        transparent 100%);
+    padding-left: 20px;
+    position: relative;
+    animation: systemLog 0.2s ease-out forwards;
+}
+
+.content-paragraph.auto-displayed[data-style="system"]::before {
+    content: '>';
+    position: absolute;
+    left: 5px;
+    color: #00ff00;
+    animation: blink 1s infinite;
+}
+
+@keyframes systemLog {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============ 滚动优化 ============ */
+.card-scroll {
+    scroll-behavior: smooth;
+}
+
+/* 自动播放时禁用点击提示 */
+.text-content.auto-playing .continue-hint {
+    display: none !important;
+}
+
+/* ============ 跳过提示 ============ */
+.text-content.auto-playing::after {
+    content: '按 ESC 跳过';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: #666;
+    font-size: 11px;
+    padding: 2px 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    border-radius: 3px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.text-content.auto-playing:hover::after {
+    opacity: 1;
+}
+
+/* ============ 响应式调整 ============ */
+@media (max-width: 768px) {
+    .auto-play-indicator {
+        font-size: 10px;
+        padding: 2px 8px;
+        top: -25px;
+    }
+
+    .text-content.auto-playing::after {
+        font-size: 10px;
+        padding: 1px 6px;
+    }
+}
+
+/* ============ 视觉效果增强 ============ */
+.content-paragraph.auto-displayed {
+    position: relative;
+}
+
+/* 添加扫描线效果 - 已禁用（根据用户反馈） */
+/*
+.content-paragraph.auto-displayed::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(0, 255, 0, 0.5) 50%,
+        transparent 100%);
+    animation: scanLine 0.5s linear forwards;
+    pointer-events: none;
+}
+
+@keyframes scanLine {
+    from {
+        transform: translateX(-100%);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+*/
+
+/* ============ 性能优化 ============ */
+.content-paragraph {
+    will-change: opacity, transform;
+}
+
+.content-paragraph.auto-displayed {
+    will-change: auto;
+    animation-fill-mode: forwards;
+}
+
+/* 完成动画后移除will-change */
+.content-paragraph.auto-displayed.animation-complete {
+    will-change: auto;
+}

@@ -1,0 +1,578 @@
+/**
+ * 记忆删除动画效果
+ * Memory Deletion Animation Effects
+ */
+
+/* ========== 全局盒模型设置 ========== */
+
+/* 确保所有容器使用border-box盒模型 */
+.deletion-screen,
+.deletion-container,
+.log-area,
+.log-scroll,
+.progress-area,
+.progress-container,
+.progress-fill {
+  box-sizing: border-box;
+}
+
+/* ========== 删除屏幕容器 ========== */
+
+.deletion-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  color: #FF0000;
+  font-family: 'Zpix', 'Fira Code', 'Courier New', 'Consolas', monospace;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  /* 确保完全遮挡底层 */
+  isolation: isolate;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* 淡入效果 */
+.deletion-screen.fade-in {
+  animation: deletion-fade-in 1s forwards;
+}
+
+/* 淡出效果 */
+.deletion-screen.fade-out {
+  animation: deletion-fade-out 2s forwards;
+}
+
+/* 背景遮罩层（防止闪烁露出底层） */
+.deletion-screen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes deletion-fade-in {
+  from {
+    opacity: 0;
+    filter: brightness(0);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes deletion-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ========== 内容容器 ========== */
+
+.deletion-container {
+  width: 50vw;
+  max-width: 650px;
+  min-width: 480px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* 确保故障效果不穿透 */
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  /* 防止内容溢出 */
+  overflow: hidden;
+  /* 居中显示 */
+  margin: 0 auto;
+  /* 防止flex布局压缩 */
+  flex: 0 0 auto;
+}
+
+/* ========== 日志区域 ========== */
+
+.log-area {
+  flex: 1;
+  overflow: hidden;
+  padding-bottom: 40px;
+  /* 禁止用户滚动 */
+  pointer-events: none;
+}
+
+.log-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+  /* 完全隐藏滚动条 */
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+/* 完全隐藏滚动条 (WebKit) */
+.log-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* 单条日志 */
+.log-line {
+  font-size: 18px;
+  line-height: 1.8;
+  margin: 6px 0;
+  opacity: 0;
+  animation: log-appear 0.3s forwards;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@keyframes log-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========== 日志样式变体 ========== */
+
+/* 普通日志 */
+.log-normal {
+  color: #FF4444;
+  font-weight: 400;
+}
+
+/* 警告日志 */
+.log-warning {
+  color: #FF0000;
+  font-weight: 700;
+  animation: log-appear 0.3s forwards, warning-blink 0.5s infinite 0.3s;
+}
+
+@keyframes warning-blink {
+  0%, 49% {
+    opacity: 1;
+    text-shadow: 0 0 8px #FF0000;
+  }
+  50%, 100% {
+    opacity: 0.6;
+    text-shadow: 0 0 4px #FF0000;
+  }
+}
+
+/* 错误日志（用于刷屏） */
+.log-error {
+  color: #FF0000;
+  font-weight: 700;
+  text-shadow: 0 0 8px #FF0000;
+  animation: log-appear 0.1s forwards;
+}
+
+/* 关键信息（加粗） */
+.log-critical {
+  color: #FF0000;
+  font-weight: 700;
+  font-size: 19px;
+  text-shadow: 0 0 10px #FF0000;
+}
+
+/* 系统消息（特殊样式） */
+.log-system {
+  color: #FF0000;
+  font-weight: 700;
+  text-align: center;
+  font-size: 20px;
+  margin: 15px 0;
+  text-shadow: 0 0 15px #FF0000;
+  letter-spacing: 0.05em;
+}
+
+/* 损坏文字效果 */
+.log-corrupted {
+  color: #FF0000;
+  font-family: monospace;
+  letter-spacing: 0.2em;
+  animation: log-appear 0.3s forwards, text-corruption 0.3s infinite;
+}
+
+@keyframes text-corruption {
+  0%, 100% {
+    filter: none;
+  }
+  50% {
+    filter: brightness(1.3) contrast(1.5);
+  }
+}
+
+/* ========== 进度条区域 ========== */
+
+.progress-area {
+  flex-shrink: 0;
+  padding: 20px 0;
+  /* 确保进度条不被遮挡 */
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+  /* 创建独立的层叠上下文和渲染层 */
+  transform: translateZ(0);
+  will-change: transform;
+  /* 确保不受父容器变形影响 */
+  backface-visibility: hidden;
+}
+
+/* 进度标签 */
+.progress-label {
+  font-size: 16px;
+  color: #FF0000;
+  margin-bottom: 10px;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+.warning-icon {
+  margin-right: 8px;
+  display: inline-block;
+  animation: icon-pulse 1s infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* 进度条容器 */
+.progress-container {
+  width: 100%;
+  height: 12px;
+  background: #1a1a1a;
+  border: 1px solid #FF0000;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+/* 进度条填充 */
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,
+    #CC0000 0%,
+    #FF0000 50%,
+    #CC0000 100%
+  );
+  transition: width 0.1s linear;  /* 改为linear，倒退时更平滑 */
+  box-shadow: 0 0 10px #FF0000;
+  position: relative;
+}
+
+/* 进度条扫描线效果 */
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-scan 2s infinite;
+}
+
+@keyframes progress-scan {
+  0% {
+    left: -50%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* 进度条信息 */
+.progress-info {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  /* 确保不被遮挡 */
+  position: relative;
+  z-index: 10;
+}
+
+.progress-percent {
+  color: #FF0000;
+  font-weight: 700;
+  font-size: 20px;
+  text-shadow: 0 0 8px #FF0000;
+  position: relative;
+  z-index: 10;
+}
+
+.progress-path {
+  color: #FF4444;
+  font-size: 14px;
+  opacity: 0.8;
+  position: relative;
+  z-index: 10;
+}
+
+/* ========== 光标效果 ========== */
+
+.cursor-blink {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FF0000;
+  font-size: 20px;
+  animation: cursor-blink 0.8s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ========== 故障效果增强 ========== */
+
+/* 进度条抖动（中度故障） */
+.progress-container.glitch-shake {
+  animation: progress-shake 0.3s infinite;
+}
+
+@keyframes progress-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+/* 进度条剧烈抖动（重度故障） */
+.progress-container.glitch-shake-heavy {
+  animation: progress-shake-heavy 0.2s infinite;
+}
+
+@keyframes progress-shake-heavy {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-4px, 2px); }
+  50% { transform: translate(4px, -2px); }
+  75% { transform: translate(-2px, -3px); }
+}
+
+/* 文字抖动效果 */
+.log-line.text-glitch {
+  animation: log-appear 0.3s forwards, text-glitch 0.1s infinite;
+}
+
+@keyframes text-glitch {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-1px);
+  }
+  75% {
+    transform: translateX(1px);
+  }
+}
+
+/* ========== 响应式设计 ========== */
+
+@media (max-width: 1024px) {
+  .deletion-container {
+    width: 60vw;
+    max-width: 620px;
+    min-width: 440px;
+  }
+
+  .log-line {
+    font-size: 16px;
+  }
+
+  .progress-percent {
+    font-size: 18px;
+  }
+
+  .log-system {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .deletion-container {
+    width: 70vw;
+    max-width: 530px;
+    min-width: 370px;
+    padding: 20px;
+  }
+
+  .log-area {
+    padding-bottom: 20px;
+  }
+
+  .log-line {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .progress-container {
+    height: 10px;
+  }
+
+  .progress-percent {
+    font-size: 16px;
+  }
+
+  .progress-path {
+    font-size: 12px;
+  }
+
+  .log-system {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .deletion-container {
+    width: 85vw;
+    min-width: 280px;
+  }
+
+  .log-line {
+    font-size: 14px;
+  }
+
+  .progress-label {
+    font-size: 14px;
+  }
+
+  .progress-container {
+    height: 8px;
+  }
+}
+
+/* ========== 苏醒动画（绿色主题） ========== */
+
+/* 苏醒屏幕主题 */
+.awakening-screen {
+  color: #00FF00;  /* 绿色主题 */
+}
+
+/* 绿色光标 */
+.awakening-cursor {
+  color: #00FF00;
+}
+
+/* 普通日志（绿色） */
+.log-awakening-normal {
+  color: #00FF00;
+  font-weight: 400;
+}
+
+/* 高亮日志（加粗绿色） */
+.log-awakening-highlight {
+  color: #00FF00;
+  font-weight: 700;
+  font-size: 19px;
+  text-shadow: 0 0 8px #00FF00;
+}
+
+/* 记忆名称（浅绿色） */
+.log-awakening-memory {
+  color: #88FF88;
+  font-weight: 400;
+  font-size: 18px;
+  margin-left: 20px;
+  text-shadow: 0 0 4px #00FF00;
+  animation: log-appear 0.3s forwards;
+}
+
+/* 关键记忆（强调） */
+.log-awakening-critical {
+  color: #00FF00;
+  font-weight: 700;
+  font-size: 20px;
+  text-shadow: 0 0 15px #00FF00;
+  margin-left: 20px;
+  animation: log-appear 0.3s forwards;
+}
+
+/* 系统消息（绿色居中） */
+.log-awakening-system {
+  color: #00FF00;
+  font-weight: 700;
+  text-align: center;
+  font-size: 20px;
+  margin: 15px 0;
+  text-shadow: 0 0 15px #00FF00;
+  letter-spacing: 0.1em;
+}
+
+/* 最终消息（大字号） */
+.log-awakening-final {
+  color: #00FF00;
+  font-weight: 700;
+  text-align: center;
+  font-size: 26px;
+  margin: 20px 0;
+  text-shadow: 0 0 20px #00FF00;
+  letter-spacing: 0.15em;
+  animation: log-appear 0.5s forwards;
+}
+
+/* ========== 性能优化 ========== */
+
+.deletion-screen,
+.progress-fill,
+.log-line {
+  will-change: transform, opacity, filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ========== 用户偏好：减少动画 ========== */
+
+@media (prefers-reduced-motion: reduce) {
+  .deletion-screen,
+  .log-line,
+  .progress-fill,
+  .warning-icon,
+  .cursor-blink {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .log-line {
+    opacity: 1;
+    transform: none;
+  }
+}

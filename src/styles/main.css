@@ -1,0 +1,886 @@
+/* ====================================
+   Burning Memory - Main Styles
+   ====================================
+   Terminal-style UI with black background and green text
+*/
+
+/* CSS变量定义 - Color Variables */
+:root {
+  /* 主色调 - Primary Colors (磷光绿体系，微调冷色) */
+  --bg-black: #031205;  /* 深绿色背景，略冷 */
+  --bg-screen: #031205;
+  --phosphor-primary: #80ff8a;  /* 亮绿色，R略减 */
+  --phosphor-dim: #48a04e;  /* 暗绿色，略冷 */
+  /* 兼容旧变量名 */
+  --terminal-green: var(--phosphor-primary);
+  --soft-green: var(--phosphor-primary);
+  --dark-green: var(--phosphor-dim);
+
+  /* 辅助色 - Accent Colors (保留用于特殊状态) */
+  --alert-blue: #3399FF;
+  --error-red: #FF3333;
+  --hint-yellow: #FFFF00;
+
+  /* 锁定项暗红色 - Locked Item Dark Red */
+  --locked-red: #cc4444;
+  --locked-red-dim: #8a3333;
+
+  /* 中性色 - Neutral Colors */
+  --light-gray: #CCCCCC;
+  --dark-gray: #333333;
+
+  /* CRT辉光效果 - CRT Glow Effect */
+  --glow-spread: 2px;
+  --glow-blur: 4px;
+
+  /* 悬停背景色 - Hover Background */
+  --hover-bg: rgba(0, 255, 0, 0.1);
+}
+
+/* ====================================
+   主题系统 - Theme System
+   ==================================== */
+
+/* 绿色主题 - SEARCH 模式（默认，微调冷色） */
+body.theme-search {
+  --phosphor-primary: #80ff8a;
+  --phosphor-dim: #48a04e;
+  --hover-bg: rgba(0, 255, 0, 0.1);
+}
+
+/* 黄色主题 - SORT 模式 */
+body.theme-sort {
+  --phosphor-primary: #ffcc00;
+  --phosphor-dim: #b38f00;
+  --hover-bg: rgba(255, 204, 0, 0.1);
+  /* CRT 效果颜色（黄色） */
+  --crt-primary-color: #ffcc00;
+  --crt-scanline-color: rgba(255, 204, 0, 0.08);
+  --crt-scanline-glow: rgba(255, 204, 0, 0.12);
+  --crt-scanline-shadow: rgba(255, 204, 0, 0.3);
+  --crt-glow-color: rgba(255, 204, 0, 0.15);
+  --crt-glow-strong: rgba(255, 204, 0, 0.4);
+  --crt-glow-weak: rgba(255, 204, 0, 0.2);
+}
+
+/* 红色主题 - DELETE 模式 */
+body.theme-delete {
+  --phosphor-primary: #cc4444;
+  --phosphor-dim: #8a3333;
+  --hover-bg: rgba(204, 68, 68, 0.1);
+  /* CRT 效果颜色（红色） */
+  --crt-primary-color: #cc4444;
+  --crt-scanline-color: rgba(204, 68, 68, 0.08);
+  --crt-scanline-glow: rgba(204, 68, 68, 0.12);
+  --crt-scanline-shadow: rgba(204, 68, 68, 0.3);
+  --crt-glow-color: rgba(204, 68, 68, 0.15);
+  --crt-glow-strong: rgba(204, 68, 68, 0.4);
+  --crt-glow-weak: rgba(204, 68, 68, 0.2);
+}
+
+/* 全局重置 - Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body样式 - Body Styles */
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-black);
+  color: var(--terminal-green);
+  font-family: 'VT323', 'Zpix', monospace;
+  font-size: 20px;  /* Zpix像素字体 */
+  line-height: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* 全局禁用文字选中 */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 主容器 - Main Container */
+.app-container {
+  display: flex;
+  width: 80%;
+  height: 80%;
+  border: 3px solid var(--terminal-green);
+  transition: border-color 0.3s ease;
+}
+
+/* 左侧栏 - Left Sidebar */
+.left-sidebar {
+  width: 17.5%;
+  height: 100%;
+  border-right: 1px solid var(--dark-green);
+  background-color: var(--bg-black);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.3s ease;
+}
+
+/* 右侧区域 - Right Area */
+.right-area {
+  width: 82.5%;
+  height: 100%;
+  background-color: var(--bg-black);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ====================================
+   卡片内容区详细样式 - Card Content Area Detailed Styles
+   ==================================== */
+
+/* 卡片内容区容器 - Card Content Container */
+.card-content-area {
+  flex: 1;              /* 占据剩余空间（替代固定 height: 70%） */
+  min-height: 200px;    /* 内容区最小高度保护 */
+  border-bottom: 2px dashed var(--phosphor-dim, #4e9c4e); /* P5 统一：与左右分割线一致 */
+  background-color: var(--bg-black);
+  color: var(--terminal-green);
+  display: flex;
+  flex-direction: column;
+  /* 禁用文字选择 - Disable Text Selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 标题栏 - Title Bar (P5 统一虚线样式) */
+.title-bar {
+  height: 50px;
+  border-bottom: none;  /* 默认无分割线 */
+  padding: 0 20px;
+  display: flex;
+  justify-content: flex-start;  /* 左对齐 */
+  align-items: center;
+  background-color: var(--bg-black);
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* 打开文件后显示分割线 - P5 统一：与左右分割线一致 */
+.title-bar.has-content {
+  border-bottom: 2px dashed var(--phosphor-dim);
+}
+
+/* P3 新标题格式 - 完整标题显示 */
+.card-filename {
+  color: var(--phosphor-primary);
+  font-size: 20px;  /* 适配新格式 */
+  font-weight: 400;
+  white-space: nowrap;  /* 防止换行 */
+}
+
+/* 旧元素隐藏 */
+.card-year {
+  display: none;  /* P3中年份已整合到标题 */
+}
+
+.card-timestamp {
+  display: none;  /* P3中时间已整合到标题 */
+}
+
+/* 卡片内容滚动区 - Card Scroll Area */
+.card-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  /* 禁用文字选择 - Disable Text Selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 图片展示区 - Image Display */
+.image-display {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.image-placeholder {
+  display: inline-block;
+  padding: 60px 100px;
+  border: 1px dashed var(--dark-green);
+  color: var(--soft-green);
+  font-size: 14px;
+  background-color: rgba(0, 255, 0, 0.02);
+}
+
+/* 文本内容区 - Text Content Area */
+.text-content {
+  color: var(--phosphor-primary);
+  font-size: 20px;  /* 中文Zpix像素字体 */
+  line-height: 1.5;
+  max-width: 80ch;
+  /* 禁用文字选择 - Disable Text Selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 英文模式字体大小 */
+body.lang-en .text-content {
+  font-size: 24px;
+}
+
+.text-content p {
+  margin-bottom: 16px;
+}
+
+/* 线索词高亮 - Clue Word Highlight (亮白色) */
+.clue-word {
+  color: #e0e0e0;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #aaaaaa;
+  transition: all 0.2s;
+}
+
+.clue-word:hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px #ffffff;
+}
+
+/* ====================================
+   输入交互区详细样式 - Input Area Detailed Styles
+   三段式布局: 系统输出 / 输入行 / 状态按钮
+   ==================================== */
+
+/* 输入交互区容器 - Input Area Container */
+.input-area {
+  flex-shrink: 0;       /* 禁止被压缩（替代固定 height: 30%） */
+  min-height: 160px;    /* 最小高度保护：系统输出 + 输入行 + 按钮栏 */
+  background-color: var(--bg-black);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  cursor: text; /* 提示用户可以点击输入 */
+}
+
+/* 系统输出区 - System Output */
+.system-output {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 50px;     /* 至少能显示1-2行系统消息 */
+  overflow: hidden;
+}
+
+.output-line {
+  margin: 2px 0;
+  color: var(--phosphor-primary, #8aff8a);
+  font-size: 22px; /* P4 修复：与 prompt/input 统一 */
+  line-height: 1.4;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
+}
+
+.output-line:empty {
+  height: 1.4em;
+}
+
+/* DELETE 确认提示高亮样式 */
+.output-line.confirm-highlight {
+  font-weight: bold;
+  opacity: 1;
+}
+
+/* 输入行 - Input Line */
+.input-line {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  padding: 10px 0;
+  /* P4 修复：删除上边框 */
+}
+
+.prompt {
+  color: var(--phosphor-primary, #8aff8a);
+  font-size: 22px;
+  font-weight: normal; /* P4 修复：与 output-line 统一，不用 bold */
+  margin-right: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: color 0.3s ease;
+}
+
+.command-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--phosphor-primary, #8aff8a);
+  font-family: 'VT323', 'Zpix', monospace;
+  font-size: 22px;
+  line-height: 1.5;
+  padding-left: 4px; /* 中文字符左侧呼吸空间 */
+  /* 允许输入框内文字选中 */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  caret-color: transparent; /* 隐藏原生光标 */
+  /* P4 修复：宽度自适应内容 */
+  width: auto;
+  min-width: 1ch;
+  opacity: 0.85; /* P4 修复：与系统输出亮度一致 */
+  transition: color 0.3s ease;
+}
+
+.command-input::placeholder {
+  color: var(--phosphor-dim, #4e9c4e);
+  opacity: 0.5;
+}
+
+/* 方块光标 - Block Cursor */
+.cursor-block {
+  display: inline-block;
+  width: 12px;
+  height: 22px;
+  background-color: var(--phosphor-primary, #8aff8a);
+  margin-left: 0;
+  vertical-align: middle;
+  flex-shrink: 0;
+  /* 默认：不闪烁，暗淡显示 */
+  animation: none;
+  opacity: 0.3;
+  box-shadow: none;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 聚焦时：闪烁，正常亮度 */
+.input-line.cursor-active .cursor-block {
+  animation: hard-blink 1s steps(2, start) infinite;
+  opacity: 0.85;
+  box-shadow: 0 0 6px var(--phosphor-dim, #4e9c4e);
+}
+
+/* 状态按钮栏 - Function Bar */
+.function-bar {
+  display: flex;
+  gap: 15px;
+  padding-top: 10px;
+  width: 100%;
+  /* P4 修复：删除上边框 */
+}
+
+/* RESET 按钮靠右显示 */
+.func-btn[data-mode="reset"] {
+  margin-left: auto;
+}
+
+.func-btn {
+  color: var(--phosphor-primary, #8aff8a);
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 5px 8px;
+  font-size: 18px;
+  white-space: nowrap;
+  transition: opacity 0.2s, color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.func-btn:hover {
+  opacity: 0.9;
+}
+
+.func-btn.active {
+  background: var(--phosphor-dim, #4e9c4e); /* P4 修复：降低亮度 */
+  color: #000;
+  opacity: 1;
+  box-shadow: 0 0 6px var(--phosphor-dim, #4e9c4e);
+  text-shadow: none;
+}
+
+.func-btn.locked {
+  display: none; /* 解锁前隐藏 */
+}
+
+/* 闪烁光标（卡片区使用） - Blinking Cursor (for card area) */
+.cursor-blink {
+  color: #AAAAAA;
+  font-size: 12px;
+  font-weight: 400;
+  animation: blink 2.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 60% {
+    opacity: 1;
+  }
+  61%, 100% {
+    opacity: 0.2;
+  }
+}
+
+/* 继续提示文本 - Continue Hint */
+.continue-hint {
+  color: #AAAAAA;
+  font-size: 18px;
+  margin-top: 20px;
+  font-style: normal;
+  font-weight: 300;
+  animation: blink 1.5s infinite;
+  /* 禁用文字选择 - Disable Text Selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 闪烁动画 - Blink Animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* 指令提示区已移除 - Command Help Removed (P4.1) */
+
+/* ====================================
+   左侧栏详细样式 - Left Sidebar Detailed Styles
+   ==================================== */
+
+/* 文件列表 - File List */
+.file-list {
+  flex: 1;
+  border-bottom: 1px solid var(--dark-green);
+  padding: 8px;
+  overflow-y: auto;
+}
+
+/* 文件项 - File Item */
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 6px 8px 24px;  /* 左边距留出黑框空间 */
+  margin-bottom: 6px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+  font-size: 20px;  /* VT323 需要更大字号 */
+  line-height: 1.4;
+}
+
+.file-item:hover {
+  background-color: var(--hover-bg, rgba(0, 255, 0, 0.1));
+}
+
+/* 选中项黑方块标记 - Active Marker */
+.active-marker {
+  margin-right: 5px;
+  color: #000;  /* 反白时方块为黑色 */
+}
+
+/* 当前选中的文件 - Active File (反白效果) */
+.file-item.active {
+  background-color: var(--phosphor-primary);
+  color: #000;
+  padding-left: 24px;  /* 保持与其他项对齐 */
+  box-shadow: 0 0 15px var(--phosphor-dim);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 选中项文件名 - 反白时为黑色 */
+.file-item.active .file-name {
+  color: #000 !important;
+  font-weight: 500;
+  text-shadow: none;
+  opacity: 1 !important;
+}
+
+/* 文件图标 - File Icon */
+.file-icon {
+  margin-right: 6px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* 文件名 - Filename */
+.file-name {
+  flex: 1;
+  font-weight: 400;
+}
+
+/* ====================================
+   文件状态颜色系统 - File Status Colors
+   亮度区分: 未读100%+发光 > 已读40% | 锁定=暗红100%+发光
+   ==================================== */
+
+/* 未读状态 - Unread Status (最亮 + 发光) */
+.file-item.unread .file-name {
+  color: var(--phosphor-primary);
+  opacity: 1;
+  text-shadow: 0 0 8px var(--phosphor-dim);
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* 已读状态 - Read Status (40% 亮度) */
+.file-item.read .file-name {
+  color: var(--phosphor-primary);
+  opacity: 0.4;
+  transition: color 0.3s ease;
+}
+
+/* 锁定状态 - Locked Status (暗红色 100% + 发光) */
+.file-item.locked .file-name {
+  color: var(--locked-red);
+  opacity: 1;
+  text-shadow: 0 0 8px var(--locked-red-dim);
+}
+
+/* 选中状态 - Active (反白, 优先级最高) */
+/* 已在上方 .file-item.active 和 .file-item.active .file-name 定义 */
+
+/* 锁定文件可点击 - Locked files are clickable */
+.file-item.locked {
+  cursor: pointer;
+}
+
+.file-item.locked:hover {
+  background-color: rgba(138, 255, 138, 0.1);
+}
+
+/* 刚解锁闪烁效果 - Just Unlocked Flash Effect */
+@keyframes unlock-flash {
+  0%, 50% {
+    opacity: 1;
+    text-shadow: 0 0 15px var(--phosphor-primary), 0 0 30px var(--phosphor-primary);
+  }
+  25%, 75% {
+    opacity: 0.6;
+    text-shadow: 0 0 8px var(--phosphor-dim);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 8px var(--phosphor-dim);
+  }
+}
+
+.file-item.just-unlocked .file-name {
+  animation: unlock-flash 1s ease-out;
+  color: var(--phosphor-primary);
+}
+
+/* 统计信息 - Statistics */
+.statistics {
+  height: 50px;
+  padding: 12px;
+  padding-right: 60px;  /* 内容向左偏移约5字符 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.statistics p {
+  margin: 0;
+}
+
+.stat-number {
+  font-weight: 500;
+}
+
+/* Statistics 主题 - 绿色 (SEARCH) */
+body.theme-search .statistics {
+  color: #8aff8a;
+  text-shadow: 0 0 2px #4e9c4e, 0 0 8px #4e9c4e;
+}
+
+/* Statistics 主题 - 黄色 (SORT) */
+body.theme-sort .statistics {
+  color: #ffcc00;
+  text-shadow: 0 0 2px #b38f00, 0 0 8px #b38f00;
+}
+
+/* Statistics 主题 - 红色 (DELETE) */
+body.theme-delete .statistics {
+  color: #cc4444;
+  text-shadow: 0 0 2px #8a3333, 0 0 8px #8a3333;
+}
+
+/* Tab切换栏 - Tab Switch Bar */
+.tab-switch {
+  height: 50px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 4px;
+  border-bottom: 1px solid var(--dark-green);
+}
+
+/* Tab按钮 - Tab Button (方括号风格) */
+.tab-btn {
+  position: relative;
+  padding: 5px 6px;
+  background: transparent;
+  border: none;
+  color: var(--phosphor-primary, #8aff8a);
+  font-family: 'VT323', 'Zpix', monospace;
+  font-size: 18px;
+  cursor: pointer;
+  transition: opacity 0.2s, color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  opacity: 0.8;
+}
+
+/* Tab选中效果 - 反白 */
+.tab-btn.active {
+  background: var(--phosphor-primary, #8aff8a);
+  color: #000;
+  opacity: 1;
+  text-shadow: none;
+  box-shadow: 0 0 15px var(--phosphor-dim, #4e9c4e);
+}
+
+.tab-btn:focus {
+  outline: none;
+}
+
+/* 临时标签样式 - Temporary Labels */
+.area-label {
+  color: var(--terminal-green);
+  font-size: 14px;
+  padding: 5px;
+  text-align: center;
+}
+
+/* CRT辉光效果类（可选） - CRT Glow Effect (Optional) */
+.crt-glow {
+  text-shadow:
+    0 0 var(--glow-spread) var(--terminal-green),
+    0 0 var(--glow-blur) var(--terminal-green);
+}
+
+/* 滚动条样式 - Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: var(--bg-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--dark-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--terminal-green);
+}
+
+/* 选中文本样式 - Text Selection */
+::selection {
+  background-color: var(--dark-green);
+  color: var(--terminal-green);
+}
+
+::-moz-selection {
+  background-color: var(--dark-green);
+  color: var(--terminal-green);
+}
+
+/* ========== 未读提示系统样式 ========== */
+
+/* Tab未读星号 - Tab Unread Notification */
+.tab-notification {
+  position: absolute;
+  top: 2px;
+  right: -2px;
+  color: #fff;
+  text-shadow: 0 0 4px #8aff8a, 0 0 8px #8aff8a, 0 0 12px #8aff8a;
+  animation: hard-blink 1s steps(2, start) infinite;
+  display: none;  /* 默认隐藏 */
+  font-size: 14px;
+}
+
+/* 生硬闪烁动画 - Hard Blink */
+@keyframes hard-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* 解锁闪烁动画（红色→蓝色） */
+@keyframes unlock-flash {
+  0% {
+    background-color: rgba(255, 51, 51, 0.2);  /* 红色 */
+  }
+  50% {
+    background-color: rgba(51, 153, 255, 0.3);  /* 蓝色 */
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.file-item.unlocking {
+  animation: unlock-flash 1s ease-out;
+}
+
+/* 阅读模式样式 */
+/* 注意：不要对body设置pointer-events，否则无法滚动 */
+body.reading-mode .file-item:not(.reading-current) {
+  opacity: 0.3;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+body.reading-mode .tab-btn {
+  opacity: 0.3;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+body.reading-mode .command-input {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  background-color: rgba(50, 50, 50, 0.5);
+}
+
+/* 阅读模式下禁用整个输入区域 */
+body.reading-mode .input-area {
+  position: relative;
+}
+
+body.reading-mode .input-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  pointer-events: none;
+}
+
+body.reading-mode .input-line,
+body.reading-mode .function-bar,
+body.reading-mode .system-output {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 阅读锁定时的禁用元素样式 */
+.reading-locked {
+  position: relative;
+  cursor: not-allowed !important;
+  pointer-events: none;  /* 阻止交互但不影响滚动 */
+  opacity: 0.5;          /* 半透明效果 */
+}
+
+/* 使用伪元素显示禁用效果，但不使用after避免阻挡 */
+.reading-locked:hover {
+  cursor: not-allowed !important;
+}
+
+/* 当前正在阅读的卡片高亮 */
+.file-item.reading-current {
+  opacity: 1 !important;
+  border-color: var(--terminal-green) !important;
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+/* ========== 重置确认弹窗 ========== */
+
+/* 遮罩层 */
+.reset-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+}
+
+.reset-modal-overlay.active {
+  display: flex;
+}
+
+/* 弹窗主体 */
+.reset-modal {
+  background-color: #0a0a0a;
+  border: 2px solid var(--phosphor-primary, #00ff41);
+  padding: 30px 40px;
+  max-width: 450px;
+  text-align: center;
+  box-shadow:
+    0 0 20px rgba(0, 255, 65, 0.3),
+    inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 警告文本 */
+.reset-modal-text {
+  margin-bottom: 25px;
+}
+
+.reset-warning {
+  color: var(--phosphor-primary, #00ff41);
+  font-family: 'VT323', 'Zpix', monospace;
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* 按钮容器 */
+.reset-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* 按钮样式 */
+.reset-btn {
+  font-family: 'VT323', 'Zpix', monospace;
+  font-size: 16px;
+  padding: 8px 20px;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid var(--phosphor-primary, #00ff41);
+  color: var(--phosphor-primary, #00ff41);
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+  background-color: var(--phosphor-primary, #00ff41);
+  color: #0a0a0a;
+}
+
+.reset-btn.confirm:hover {
+  background-color: #ff4444;
+  border-color: #ff4444;
+  color: #0a0a0a;
+}
+
+/* 取消按钮默认较暗 */
+.reset-btn.cancel {
+  opacity: 0.7;
+}
+
+.reset-btn.cancel:hover {
+  opacity: 1;
+}

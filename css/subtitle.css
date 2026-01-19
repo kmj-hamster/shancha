@@ -1,0 +1,418 @@
+/**
+ * 字幕系统样式表
+ * 实现独立的字幕显示层和立体视觉效果
+ */
+
+/* ====================================
+   字幕层基础样式
+   ==================================== */
+
+/* 字幕层容器 */
+.subtitle-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 15000; /* 高于关机覆盖层(10000)和结束界面(10000) */
+    pointer-events: none; /* 不阻挡下层交互 */
+}
+
+/* 字幕区域 */
+.subtitle-zone {
+    position: absolute;
+    width: 100%;
+    display: none;  /* 默认隐藏 */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* 字幕内容容器 - 立体效果核心 */
+.subtitle-content {
+    position: relative;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);  /* Safari兼容 */
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    padding: 15px 30px;
+    max-width: 70%;
+    min-width: 200px;
+    text-align: center;
+
+    /* 多层阴影创造立体感 */
+    box-shadow:
+        /* 外部阴影 - 深度感 */
+        0 4px 20px rgba(0, 0, 0, 0.8),
+        0 8px 40px rgba(0, 0, 0, 0.6),
+        /* 绿色光晕 - 终端风格 */
+        0 0 40px rgba(0, 255, 0, 0.1),
+        0 0 60px rgba(0, 255, 0, 0.05),
+        /* 内部光晕 - 发光效果 */
+        inset 0 0 20px rgba(0, 255, 0, 0.05),
+        inset 0 1px 0 rgba(0, 255, 0, 0.1);
+
+    /* 3D变换 - 轻微的透视效果 */
+    transform: translateZ(20px);
+    transform-style: preserve-3d;
+
+    /* 扫描线纹理叠加 */
+    position: relative;
+    overflow: hidden;
+}
+
+/* 扫描线效果（增强立体感） */
+.subtitle-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 文字在扫描线之上 */
+.subtitle-content > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* CRT曲面效果（可选） */
+.subtitle-content::after {
+    content: '';
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    right: -5%;
+    bottom: -5%;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 0%,
+        transparent 65%,
+        rgba(0, 0, 0, 0.2) 100%
+    );
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* ====================================
+   位置特定样式
+   ==================================== */
+
+/* 顶部字幕 */
+.subtitle-top .subtitle-content {
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.8),
+        0 2px 10px rgba(0, 255, 0, 0.2),
+        inset 0 -1px 0 rgba(0, 255, 0, 0.2);
+}
+
+/* 中部字幕 */
+.subtitle-middle .subtitle-content {
+    border-radius: 8px;
+    /* 浮动动画 */
+    animation: subtitleFloat 4s ease-in-out infinite;
+}
+
+/* 底部字幕 */
+.subtitle-bottom .subtitle-content {
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    box-shadow:
+        0 -4px 20px rgba(0, 0, 0, 0.8),
+        0 -2px 10px rgba(0, 255, 0, 0.2),
+        inset 0 1px 0 rgba(0, 255, 0, 0.2);
+}
+
+/* ====================================
+   动画效果库
+   ==================================== */
+
+/* 淡入淡出 */
+@keyframes subtitleFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes subtitleFadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* 模糊进入 */
+@keyframes subtitleBlurIn {
+    from {
+        opacity: 0;
+        filter: blur(10px);
+        transform: scale(1.1);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: scale(1);
+    }
+}
+
+@keyframes subtitleBlurOut {
+    from {
+        opacity: 1;
+        filter: blur(0);
+    }
+    to {
+        opacity: 0;
+        filter: blur(10px);
+    }
+}
+
+/* 滑动效果 */
+@keyframes subtitleSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes subtitleSlideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+
+/* 故障效果 */
+@keyframes subtitleGlitchIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-10px);
+        text-shadow: -2px 0 #ff0000, 2px 0 #00ffff;
+    }
+    25% {
+        opacity: 0.5;
+        transform: translateX(10px);
+        text-shadow: -2px 0 #00ffff, 2px 0 #ff0000;
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateX(-5px);
+        text-shadow: -1px 0 #ff0000, 1px 0 #00ffff;
+    }
+    75% {
+        opacity: 0.9;
+        transform: translateX(5px);
+        text-shadow: -1px 0 #00ffff, 1px 0 #ff0000;
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+        text-shadow: none;
+    }
+}
+
+@keyframes subtitleGlitchOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    25% {
+        opacity: 0.8;
+        transform: translateX(-5px) scaleY(0.95);
+        filter: hue-rotate(90deg);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translateX(5px) scaleY(0.9);
+        filter: hue-rotate(180deg);
+    }
+    75% {
+        opacity: 0.3;
+        transform: translateX(-3px) scaleY(0.85);
+        filter: hue-rotate(270deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(0) scaleY(0.8);
+        filter: hue-rotate(360deg);
+    }
+}
+
+/* 浮动效果 */
+@keyframes subtitleFloat {
+    0%, 100% {
+        transform: translateY(0) translateZ(20px);
+    }
+    50% {
+        transform: translateY(-10px) translateZ(30px);
+    }
+}
+
+/* 脉冲效果（警告用） */
+@keyframes subtitlePulse {
+    0%, 100% {
+        box-shadow:
+            0 4px 20px rgba(255, 0, 0, 0.4),
+            0 0 40px rgba(255, 0, 0, 0.2),
+            inset 0 0 20px rgba(255, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow:
+            0 4px 30px rgba(255, 0, 0, 0.6),
+            0 0 60px rgba(255, 0, 0, 0.4),
+            inset 0 0 30px rgba(255, 0, 0, 0.2);
+    }
+}
+
+/* ====================================
+   样式主题变体
+   ==================================== */
+
+/* 记忆风格 */
+.subtitle-content.style-memory {
+    background: rgba(20, 15, 10, 0.9);
+    border-color: rgba(255, 228, 181, 0.3);
+    box-shadow:
+        0 4px 20px rgba(139, 69, 19, 0.5),
+        0 0 40px rgba(255, 228, 181, 0.2),
+        inset 0 0 20px rgba(255, 228, 181, 0.05);
+    /* 添加老旧效果 */
+    position: relative;
+}
+
+.subtitle-content.style-memory::before {
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 4px,
+        rgba(139, 69, 19, 0.03) 4px,
+        rgba(139, 69, 19, 0.03) 8px
+    );
+}
+
+/* 系统风格 */
+.subtitle-content.style-system {
+    background: rgba(0, 10, 20, 0.95);
+    border-color: rgba(0, 255, 255, 0.4);
+    border-width: 2px;
+    box-shadow:
+        0 4px 20px rgba(0, 50, 100, 0.8),
+        0 0 30px rgba(0, 255, 255, 0.3),
+        inset 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+/* 危险/警告风格 */
+.subtitle-content.style-danger {
+    background: rgba(20, 0, 0, 0.9);
+    border-color: rgba(255, 51, 51, 0.6);
+    border-width: 2px;
+    animation: subtitlePulse 1s infinite;
+}
+
+/* 思考风格 */
+.subtitle-content.style-thought {
+    background: rgba(10, 10, 10, 0.8);
+    border-color: rgba(170, 170, 170, 0.2);
+    border-style: dashed;
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(255, 255, 255, 0.05),
+        inset 0 0 10px rgba(255, 255, 255, 0.02);
+}
+
+/* ====================================
+   响应式设计
+   ==================================== */
+
+@media (max-width: 768px) {
+    .subtitle-content {
+        max-width: 85%;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .subtitle-zone.subtitle-bottom {
+        bottom: 10%;
+    }
+
+    .subtitle-zone.subtitle-top {
+        top: 5%;
+    }
+}
+
+@media (max-width: 480px) {
+    .subtitle-content {
+        max-width: 90%;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+}
+
+/* ====================================
+   特殊效果
+   ==================================== */
+
+/* 打字机光标 */
+.subtitle-content.typewriter::after {
+    content: '▊';
+    animation: subtitleCursorBlink 0.7s infinite;
+    color: inherit;
+    margin-left: 2px;
+}
+
+@keyframes subtitleCursorBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* 长文本处理 */
+.subtitle-content.long-text {
+    max-width: 80%;
+    text-align: left;
+    padding: 20px 35px;
+}
+
+/* 重要信息高亮 */
+.subtitle-content .highlight {
+    color: #FFFF00;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
+}
+
+/* 禁用选择（防止干扰） */
+.subtitle-content {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}

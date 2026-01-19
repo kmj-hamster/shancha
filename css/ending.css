@@ -1,0 +1,301 @@
+/**
+ * 结束界面样式
+ * Ending Screen Styles
+ */
+
+/* ========== 结束界面容器 ========== */
+.ending-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #051005;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  opacity: 0;
+}
+
+/* 淡入动画 */
+.ending-screen.fade-in {
+  animation: ending-fade-in 1.5s forwards;
+}
+
+@keyframes ending-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ========== 主框架 ========== */
+.ending-frame {
+  width: 85%;
+  height: 85%;
+  border: none;
+  background: #051005;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  position: relative;
+  box-shadow: inset 0 0 60px rgba(0, 255, 0, 0.05);
+}
+
+/* ========== 顶部小标题 ========== */
+.ending-subtitle {
+  font-size: 24px;
+  color: #CCCCCC;
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+  font-weight: 300;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* ========== ASCII Logo 容器 ========== */
+.ending-logo {
+  margin-bottom: 60px;
+}
+
+/* ASCII艺术字 */
+.ending-ascii-art {
+  font-family: 'Courier New', 'Zpix', monospace;
+  font-size: 14px;
+  line-height: 1.1;
+  color: #00FF00;
+  text-shadow:
+    0 0 5px #00FF00,
+    0 0 10px #00FF00,
+    1px 1px 0 rgba(0, 100, 0, 0.6);
+  white-space: pre;
+  letter-spacing: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ASCII艺术字动画 */
+@keyframes logo-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 5px #00FF00,
+      0 0 10px #00FF00,
+      1px 1px 0 rgba(0, 100, 0, 0.6);
+  }
+  50% {
+    text-shadow:
+      0 0 8px #00FF00,
+      0 0 15px #00FF00,
+      0 0 20px rgba(0, 255, 0, 0.5),
+      1px 1px 0 rgba(0, 100, 0, 0.6);
+  }
+}
+
+.ending-ascii-art {
+  animation: logo-glow 3s ease-in-out infinite;
+}
+
+/* 中文版大号"山茶"样式 */
+.ending-ascii-art.ending-ascii-art-zh {
+  font-family: 'Zpix', 'Microsoft YaHei', sans-serif;
+  font-size: 120px;
+  line-height: 1.2;
+  letter-spacing: 0.3em;
+  font-weight: normal;
+  white-space: nowrap;
+  /* 修正 letter-spacing 导致的偏左：右侧补偿负边距 */
+  margin-right: -0.3em;
+}
+
+/* ========== Thanks for playing 文本 ========== */
+.ending-thanks {
+  font-size: 32px;
+  color: #CCCCCC;
+  letter-spacing: 4px;
+  font-weight: 300;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  font-family: 'Courier New', 'Zpix', monospace;
+}
+
+/* 中文版感谢文本样式 */
+.ending-thanks-zh {
+  font-family: 'Zpix', 'Microsoft YaHei', sans-serif;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  text-transform: none;
+  /* 与"山茶"对齐：补偿 letter-spacing 导致的偏移 */
+  margin-right: -0.2em;
+}
+
+/* ========== 重置按钮 ========== */
+.ending-reset-btn {
+  margin-top: 60px;
+  padding: 12px 40px;
+  font-family: 'Courier New', 'Zpix', monospace;
+  font-size: 18px;
+  color: #00FF00;
+  background: transparent;
+  border: 2px solid #00FF00;
+  cursor: pointer;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.ending-reset-btn:hover {
+  background: rgba(0, 255, 0, 0.15);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 10px #00FF00;
+}
+
+.ending-reset-btn:active {
+  background: rgba(0, 255, 0, 0.25);
+  transform: scale(0.98);
+}
+
+/* ========== CRT扫描线效果 ========== */
+.ending-screen.crt-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.08) 2px,
+    rgba(0, 255, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  animation: scanline-flicker 2s infinite;
+}
+
+/* 动态扫描条 */
+.ending-screen.crt-active::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 255, 0, 0.15),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  pointer-events: none;
+  z-index: 11;
+  animation: scanline-move 4s linear infinite;
+}
+
+@keyframes scanline-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+@keyframes scanline-move {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+/* 边缘暗角 */
+.ending-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 所有内容层级提升 */
+.ending-subtitle,
+.ending-logo,
+.ending-thanks {
+  position: relative;
+  z-index: 2;
+}
+
+/* ========== 响应式调整 ========== */
+@media (max-width: 1200px) {
+  .ending-ascii-art {
+    font-size: 11px;
+  }
+
+  .ending-ascii-art.ending-ascii-art-zh {
+    font-size: 90px;
+  }
+
+  .ending-subtitle {
+    font-size: 20px;
+  }
+
+  .ending-thanks {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ending-frame {
+    width: 95%;
+    height: 95%;
+    padding: 30px;
+  }
+
+  .ending-ascii-art {
+    font-size: 7px;
+  }
+
+  .ending-ascii-art.ending-ascii-art-zh {
+    font-size: 60px;
+  }
+
+  .ending-subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .ending-thanks {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .ending-logo {
+    margin-bottom: 40px;
+  }
+
+  /* 移动端禁用动态扫描条 */
+  .ending-screen.crt-active::after {
+    display: none;
+  }
+}
+
+/* ========== 性能优化 ========== */
+.ending-screen,
+.ending-frame,
+.ending-ascii-art,
+.ending-thanks {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

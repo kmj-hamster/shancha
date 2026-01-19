@@ -1,0 +1,247 @@
+/**
+ * 记忆消失特效样式 - Memory Decay Effect Styles
+ * 4阶段渐进式动画效果
+ */
+
+/* ========== 基础样式 ========== */
+
+/* 容器动画 - 仅作用于card-scroll区域 */
+.card-scroll .decay-active {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* ========== 阶段1: 记忆不稳（0-8秒） ========== */
+
+.card-scroll .decay-stage-1 {
+    animation: memory-unstable 2s ease-in-out infinite;
+    filter: contrast(1.1);
+}
+
+@keyframes memory-unstable {
+    0%, 100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 0.97;
+        filter: brightness(1.05) hue-rotate(2deg);
+    }
+}
+
+/* ========== 阶段2: 开始遗忘（8-14秒） ========== */
+
+.card-scroll .decay-stage-2 {
+    animation: memory-fading 1.5s ease-in-out infinite;
+    filter: contrast(0.95) saturate(0.9);
+}
+
+@keyframes memory-fading {
+    0%, 100% {
+        opacity: 0.9;
+        filter: blur(0);
+    }
+    50% {
+        opacity: 0.85;
+        filter: blur(0.2px);
+    }
+}
+
+/* ========== 阶段3: 加速崩解（14-18秒） ========== */
+
+.card-scroll .decay-stage-3 {
+    animation: memory-collapse 0.8s ease-in-out infinite;
+    filter: contrast(0.8) saturate(0.5);
+}
+
+@keyframes memory-collapse {
+    0%, 100% {
+        opacity: 0.7;
+        filter: blur(0.3px) drop-shadow(0 0 2px rgba(255,100,100,0.3));
+    }
+    25% {
+        opacity: 0.5;
+        filter: blur(0.5px) drop-shadow(0 0 3px rgba(255,50,50,0.4));
+    }
+    50% {
+        opacity: 0.8;
+        filter: blur(0.2px) drop-shadow(0 0 1px rgba(255,150,150,0.2));
+    }
+    75% {
+        opacity: 0.6;
+        filter: blur(0.4px) drop-shadow(0 0 4px rgba(255,0,0,0.3));
+    }
+}
+
+/* ========== 阶段4: 最终消散（18-20秒） ========== */
+
+.card-scroll .decay-stage-4 {
+    animation: memory-vanish 0.4s ease-in-out infinite;
+    filter: contrast(0.5) saturate(0);
+}
+
+@keyframes memory-vanish {
+    0%, 100% {
+        opacity: 0.3;
+        filter: blur(0.5px) drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    20% {
+        opacity: 0.1;
+        filter: blur(1px) drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+    }
+    40% {
+        opacity: 0.4;
+        filter: blur(0.3px) drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+    }
+    60% {
+        opacity: 0.2;
+        filter: blur(0.8px) drop-shadow(0 2px 5px rgba(0,0,0,0.35));
+    }
+    80% {
+        opacity: 0.35;
+        filter: blur(0.4px) drop-shadow(0 1px 3px rgba(0,0,0,0.25));
+    }
+}
+
+/* ========== 额外特效 ========== */
+
+/* 粒子效果 - 模拟记忆碎片 */
+.card-scroll .decay-stage-3::before,
+.card-scroll .decay-stage-4::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at var(--x, 50%) var(--y, 50%),
+        transparent 0%,
+        rgba(255, 0, 0, 0.05) 40%,
+        transparent 70%
+    );
+    animation: memory-particles 3s infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes memory-particles {
+    0%, 100% {
+        --x: 20%;
+        --y: 30%;
+        opacity: 0;
+    }
+    25% {
+        --x: 70%;
+        --y: 20%;
+        opacity: 0.6;
+    }
+    50% {
+        --x: 80%;
+        --y: 60%;
+        opacity: 0.3;
+    }
+    75% {
+        --x: 30%;
+        --y: 80%;
+        opacity: 0.5;
+    }
+}
+
+/* 移除了字符级别的闪烁效果，保持视觉稳定 */
+/* 乱码变化效果由JS控制，每0.5秒刷新 */
+
+/* ========== 完全消失后的效果 ========== */
+
+.card-scroll .decay-complete {
+    animation: final-breath 4s ease-in-out infinite;
+    min-height: 20px; /* 保持最小高度 */
+}
+
+@keyframes final-breath {
+    0%, 100% {
+        opacity: 0;
+        background: transparent;
+    }
+    50% {
+        opacity: 0.05;
+        background: radial-gradient(
+            ellipse at center,
+            rgba(255, 0, 0, 0.03) 0%,
+            transparent 70%
+        );
+    }
+}
+
+/* ========== 火焰光晕效果 ========== */
+
+/* 在阶段3和4添加燃烧的光晕 */
+.card-scroll .decay-stage-3,
+.card-scroll .decay-stage-4 {
+    position: relative;
+}
+
+.card-scroll .decay-stage-3::after,
+.card-scroll .decay-stage-4::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 30%,
+        rgba(255, 50, 0, 0.02) 50%,
+        rgba(255, 100, 0, 0.01) 70%,
+        transparent 100%
+    );
+    animation: fire-glow 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes fire-glow {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.05);
+    }
+}
+
+/* ========== 响应式调整 ========== */
+
+/* 移动设备上降低动画复杂度 */
+@media (max-width: 768px) {
+    .card-scroll .decay-stage-3::before,
+    .card-scroll .decay-stage-4::before,
+    .card-scroll .decay-stage-3::after,
+    .card-scroll .decay-stage-4::after {
+        display: none; /* 移动设备上禁用粒子效果 */
+    }
+
+    .card-scroll .decay-stage-3,
+    .card-scroll .decay-stage-4 {
+        animation-duration: 1s; /* 减慢动画速度 */
+    }
+}
+
+/* ========== 性能优化 ========== */
+
+/* 使用GPU加速 */
+.card-scroll .decay-active {
+    will-change: transform, opacity, filter;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* 降低重绘区域 */
+.card-scroll .decay-stage-1,
+.card-scroll .decay-stage-2,
+.card-scroll .decay-stage-3,
+.card-scroll .decay-stage-4 {
+    contain: layout style paint;
+}

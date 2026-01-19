@@ -1,0 +1,98 @@
+{
+  "initial_clues": [
+    "sunflower",
+    "hometown"
+  ],
+  "all_clues": [
+    {
+      "keyword": "sunflower",
+      "unlocked": true,
+      "related_cards": ["card_001", "card_003"]
+    },
+    {
+      "keyword": "hometown",
+      "unlocked": true,
+      "related_cards": ["card_001"]
+    },
+    {
+      "keyword": "smoke",
+      "unlocked": false,
+      "related_cards": ["card_002"]
+    },
+    {
+      "keyword": "ashes",
+      "unlocked": false,
+      "related_cards": ["card_002"]
+    },
+    {
+      "keyword": "disaster",
+      "unlocked": false,
+      "related_cards": ["card_002"]
+    },
+    {
+      "keyword": "petals",
+      "unlocked": false,
+      "related_cards": ["card_003"]
+    },
+    {
+      "keyword": "wind",
+      "unlocked": false,
+      "related_cards": ["card_003"]
+    },
+    {
+      "keyword": "secret",
+      "unlocked": false,
+      "related_cards": ["card_003", "card_005"]
+    },
+    {
+      "keyword": "childhood",
+      "unlocked": false,
+      "related_cards": ["card_003"]
+    },
+    {
+      "keyword": "train",
+      "unlocked": false,
+      "related_cards": ["card_004"]
+    },
+    {
+      "keyword": "station",
+      "unlocked": false,
+      "related_cards": ["card_004"]
+    },
+    {
+      "keyword": "departure",
+      "unlocked": false,
+      "related_cards": ["card_004"]
+    },
+    {
+      "keyword": "journey",
+      "unlocked": false,
+      "related_cards": ["card_004"]
+    },
+    {
+      "keyword": "farewell",
+      "unlocked": false,
+      "related_cards": ["card_004"]
+    },
+    {
+      "keyword": "letter",
+      "unlocked": false,
+      "related_cards": ["card_005"]
+    },
+    {
+      "keyword": "sorry",
+      "unlocked": false,
+      "related_cards": ["card_005"]
+    },
+    {
+      "keyword": "regret",
+      "unlocked": false,
+      "related_cards": ["card_005"]
+    },
+    {
+      "keyword": "truth",
+      "unlocked": false,
+      "related_cards": ["card_005"]
+    }
+  ]
+}

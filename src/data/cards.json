@@ -1,0 +1,79 @@
+[
+  {
+    "id": "card_001",
+    "filename": "1-city",
+    "title": "Hometown",
+    "type": "memory",
+    "status": "unlocked",
+    "timestamp": "9am Aug 31st",
+    "image": "../assets/images/city.jpg",
+    "content": "This is my hometown.\n\nI like the smell of sunflower.",
+    "clues": ["sunflower"],
+    "unlock_condition": null,
+    "new_clues_revealed": ["sunflower", "hometown"]
+  },
+  {
+    "id": "card_002",
+    "filename": "2-fire",
+    "title": "The Fire",
+    "type": "memory",
+    "status": "unread",
+    "timestamp": "3pm Sep 12th",
+    "image": "../assets/images/fire.jpg",
+    "content": "The smoke rises high into the sky.\n\nEverything turned to ashes that day.",
+    "clues": ["smoke", "ashes"],
+    "unlock_condition": {
+      "type": "search_clue",
+      "keyword": "sunflower"
+    },
+    "new_clues_revealed": ["smoke", "disaster"]
+  },
+  {
+    "id": "card_003",
+    "filename": "3-flower",
+    "title": "Sunflower Field",
+    "type": "file",
+    "status": "locked",
+    "timestamp": "7am Jul 4th",
+    "image": "../assets/images/flower.jpg",
+    "content": "Golden petals dancing in the wind.\n\nThis field was our secret place.",
+    "clues": ["petals", "wind", "secret"],
+    "unlock_condition": {
+      "type": "search_clue",
+      "keyword": "smoke"
+    },
+    "new_clues_revealed": ["childhood", "secret"]
+  },
+  {
+    "id": "card_004",
+    "filename": "4-train",
+    "title": "Departure",
+    "type": "memory",
+    "status": "locked",
+    "timestamp": "6pm Sep 20th",
+    "image": "../assets/images/train.jpg",
+    "content": "The train whistle echoes through the station.\n\nI never looked back.",
+    "clues": ["train", "station", "departure"],
+    "unlock_condition": {
+      "type": "unlock_files",
+      "count": 3
+    },
+    "new_clues_revealed": ["journey", "farewell"]
+  },
+  {
+    "id": "card_005",
+    "filename": "5-letter",
+    "title": "Unread Letter",
+    "type": "file",
+    "status": "locked",
+    "timestamp": "Unknown",
+    "image": null,
+    "content": "Dear...\n\nI'm sorry. I should have told you earlier.\n\n- M",
+    "clues": ["letter", "sorry"],
+    "unlock_condition": {
+      "type": "search_clue",
+      "keyword": "secret"
+    },
+    "new_clues_revealed": ["regret", "truth"]
+  }
+]

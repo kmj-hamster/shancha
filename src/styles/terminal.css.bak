@@ -1,0 +1,139 @@
+/* terminal.css - 终端风格基础样式 */
+/* 参考：history\1017-UI设计\UI设计规范.md */
+
+/* 全局重置和基础样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000;
+  color: #00FF00;
+  font-family: 'Fira Code', 'Courier New', Consolas, Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 覆盖SugarCube默认样式 */
+#ui-bar {
+  background-color: #000000;
+  border-right: 1px solid #00AA00;
+  width: 25%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  z-index: 100;
+}
+
+#ui-bar-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#ui-bar-toggle,
+#ui-bar-history {
+  display: none; /* 隐藏默认的UI控件 */
+}
+
+/* 主内容区 */
+#passages {
+  background-color: #000000;
+  color: #00FF00;
+  margin-left: 25%;
+  width: 75%;
+  height: 100vh;
+  padding: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.passage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transition: opacity 0.4s ease-in;
+  overflow: hidden;
+}
+
+/* 链接样式 */
+a {
+  color: #00FF00;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+a:hover {
+  color: #33FF33;
+  border-bottom-color: #33FF33;
+}
+
+/* 按钮样式 */
+button {
+  background: none;
+  border: 1px solid #00AA00;
+  color: #CCCCCC;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #00FF00;
+}
+
+button:active {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+/* 输入框样式 */
+input[type="text"] {
+  background-color: #000000;
+  border: 1px solid #00AA00;
+  color: #00FF00;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 16px;
+  padding: 8px 12px;
+  outline: none;
+  flex: 1;
+}
+
+input[type="text"]:focus {
+  border-color: #00FF00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00AA00;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00FF00;
+}
