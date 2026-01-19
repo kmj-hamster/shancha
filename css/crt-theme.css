@@ -17,13 +17,15 @@ body {
     background-color: #080808 !important;
     overflow: hidden !important;
     margin: 0 !important;
-    padding: 0 !important;
+    /* 安全区域支持 - Safe Area Support for notch screens */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
     width: 100vw !important;
     height: 100vh !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     font-family: 'VT323', 'Zpix', monospace !important;
+    box-sizing: border-box !important;
 }
 
 /* ========== 1. 物理容器 (The Container) ========== */
