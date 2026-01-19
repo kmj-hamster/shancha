@@ -51,44 +51,55 @@
 
 <body class="theme-search">
 
-  <!-- 手机竖屏提示 -->
+  <!-- 手机竖屏提示（Android 用） -->
   <div class="mobile-rotate-hint">
     <div class="rotate-text-zh">请将设备旋转至横屏模式</div>
     <div class="rotate-text-en">Please rotate your device to landscape</div>
 
-    <!-- PWA 安装引导 -->
-    <div class="pwa-guide">
+    <!-- PWA 安装引导（Android 竖屏时显示） -->
+    <div class="pwa-guide pwa-guide-android">
       <div class="pwa-guide-title">
         <span class="pwa-title-zh">获得最佳体验</span>
         <span class="pwa-title-en">For the best experience</span>
       </div>
-
-      <!-- iOS 引导 -->
-      <div class="pwa-guide-ios">
-        <div class="pwa-step">
-          <span class="pwa-icon">&#xfe52;</span>
-          <span class="pwa-text-zh">点击底部 <strong>分享</strong> 按钮</span>
-          <span class="pwa-text-en">Tap <strong>Share</strong> button below</span>
-        </div>
-        <div class="pwa-step">
-          <span class="pwa-icon">+</span>
-          <span class="pwa-text-zh">选择 <strong>添加到主屏幕</strong></span>
-          <span class="pwa-text-en">Select <strong>Add to Home Screen</strong></span>
-        </div>
+      <div class="pwa-step">
+        <span class="pwa-icon">&#8942;</span>
+        <span class="pwa-text-zh">点击右上角 <strong>菜单</strong> &#8942;</span>
+        <span class="pwa-text-en">Tap <strong>Menu</strong> &#8942; (top right)</span>
       </div>
+      <div class="pwa-step">
+        <span class="pwa-icon">+</span>
+        <span class="pwa-text-zh">选择 <strong>添加到主屏幕</strong></span>
+        <span class="pwa-text-en">Select <strong>Add to Home Screen</strong></span>
+      </div>
+    </div>
+  </div>
 
-      <!-- Android 引导 -->
-      <div class="pwa-guide-android">
-        <div class="pwa-step">
-          <span class="pwa-icon">&#8942;</span>
-          <span class="pwa-text-zh">点击右上角 <strong>菜单</strong> &#8942;</span>
-          <span class="pwa-text-en">Tap <strong>Menu</strong> &#8942; (top right)</span>
-        </div>
-        <div class="pwa-step">
-          <span class="pwa-icon">+</span>
-          <span class="pwa-text-zh">选择 <strong>添加到主屏幕</strong></span>
-          <span class="pwa-text-en">Select <strong>Add to Home Screen</strong></span>
-        </div>
+  <!-- iOS 强制 PWA 提示（iOS 非 PWA 模式始终显示） -->
+  <div class="ios-pwa-required">
+    <div class="ios-pwa-title">
+      <span class="pwa-title-zh">请添加到主屏幕</span>
+      <span class="pwa-title-en">Add to Home Screen Required</span>
+    </div>
+    <div class="ios-pwa-subtitle">
+      <span class="pwa-text-zh">本游戏需要以应用模式运行</span>
+      <span class="pwa-text-en">This game requires app mode to run</span>
+    </div>
+    <div class="ios-pwa-steps">
+      <div class="pwa-step">
+        <span class="pwa-step-num">1</span>
+        <span class="pwa-text-zh">点击底部 <strong>分享</strong> 按钮 <span class="share-icon">&#xfe52;</span></span>
+        <span class="pwa-text-en">Tap <strong>Share</strong> button <span class="share-icon">&#xfe52;</span> below</span>
+      </div>
+      <div class="pwa-step">
+        <span class="pwa-step-num">2</span>
+        <span class="pwa-text-zh">选择 <strong>添加到主屏幕</strong></span>
+        <span class="pwa-text-en">Select <strong>Add to Home Screen</strong></span>
+      </div>
+      <div class="pwa-step">
+        <span class="pwa-step-num">3</span>
+        <span class="pwa-text-zh">从主屏幕打开游戏</span>
+        <span class="pwa-text-en">Open the game from Home Screen</span>
       </div>
     </div>
   </div>

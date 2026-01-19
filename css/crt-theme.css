@@ -506,7 +506,7 @@ body.lang-en .mobile-rotate-hint .rotate-text-en {
     }
 }
 
-/* ========== PWA 安装引导样式 ========== */
+/* ========== PWA 安装引导样式（Android 用） ========== */
 
 .pwa-guide {
     margin-top: 40px;
@@ -514,6 +514,7 @@ body.lang-en .mobile-rotate-hint .rotate-text-en {
     border-top: 1px solid #333;
     font-size: 16px;
     max-width: 300px;
+    display: none;  /* 默认隐藏 */
 }
 
 .pwa-guide-title {
@@ -527,25 +528,14 @@ body.lang-en .mobile-rotate-hint .rotate-text-en {
     display: block;
 }
 
-/* 默认隐藏平台特定引导 */
-.pwa-guide-ios,
-.pwa-guide-android {
-    display: none;
-}
-
-/* iOS 设备显示 iOS 引导 */
-body.is-ios .pwa-guide-ios {
-    display: block;
-}
-
 /* Android 设备显示 Android 引导 */
 body.is-android .pwa-guide-android {
     display: block;
 }
 
-/* PWA 模式下隐藏整个引导 */
+/* PWA 模式下隐藏引导 */
 body.is-pwa .pwa-guide {
-    display: none;
+    display: none !important;
 }
 
 .pwa-step {
@@ -579,7 +569,7 @@ body.is-pwa .pwa-guide {
     color: var(--phosphor-primary, #80ff8a);
 }
 
-/* 语言控制 */
+/* 语言控制 - PWA 引导 */
 body.lang-zh .pwa-guide .pwa-text-en,
 body.lang-zh .pwa-guide .pwa-title-en {
     display: none;
@@ -590,15 +580,122 @@ body.lang-en .pwa-guide .pwa-title-zh {
     display: none;
 }
 
-/* ========== iOS Safari 非 PWA 模式缩放适配 ========== */
+/* ========== iOS 强制 PWA 提示样式 ========== */
 
-/* 使用 @supports 检测 iOS 设备（Safari 特有属性） */
-@supports (-webkit-touch-callout: none) {
-    /* iOS 横屏且非 PWA 模式 */
-    @media (max-width: 932px) and (orientation: landscape) {
-        body:not(.is-pwa) .monitor-bezel {
-            transform: scale(0.88);
-            transform-origin: center center;
-        }
-    }
+.ios-pwa-required {
+    display: none;  /* 默认隐藏 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #080808;
+    z-index: 10000;  /* 高于所有元素 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--phosphor-primary, #48a04e);
+    font-family: 'VT323', 'Zpix', monospace;
+    text-align: center;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.ios-pwa-title {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.ios-pwa-subtitle {
+    font-size: 16px;
+    opacity: 0.6;
+    margin-bottom: 40px;
+}
+
+.ios-pwa-steps {
+    max-width: 320px;
+    text-align: left;
+}
+
+.ios-pwa-steps .pwa-step {
+    margin: 20px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.pwa-step-num {
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--phosphor-primary, #48a04e);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ios-pwa-steps .pwa-step .pwa-text-zh,
+.ios-pwa-steps .pwa-step .pwa-text-en {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.share-icon {
+    display: inline-block;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+/* 语言控制 - iOS PWA 提示 */
+.ios-pwa-required .pwa-text-zh,
+.ios-pwa-required .pwa-title-zh {
+    display: block;
+}
+
+.ios-pwa-required .pwa-text-en,
+.ios-pwa-required .pwa-title-en {
+    display: block;
+    font-size: 14px;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+body.lang-zh .ios-pwa-required .pwa-text-en,
+body.lang-zh .ios-pwa-required .pwa-title-en {
+    display: none;
+}
+
+body.lang-en .ios-pwa-required .pwa-text-zh,
+body.lang-en .ios-pwa-required .pwa-title-zh {
+    display: none;
+}
+
+body.lang-en .ios-pwa-required .pwa-text-en,
+body.lang-en .ios-pwa-required .pwa-title-en {
+    font-size: inherit;
+    opacity: 1;
+    margin-top: 0;
+}
+
+/* ========== iOS 非 PWA 模式：强制显示 PWA 提示，隐藏游戏 ========== */
+
+/* iOS 浏览器（非 PWA）始终显示强制提示 */
+body.is-ios:not(.is-pwa) .ios-pwa-required {
+    display: flex !important;
+}
+
+/* iOS 浏览器（非 PWA）隐藏游戏界面和旋转提示 */
+body.is-ios:not(.is-pwa) .monitor-bezel {
+    display: none !important;
+}
+
+body.is-ios:not(.is-pwa) .mobile-rotate-hint {
+    display: none !important;
+}
+
+/* iOS PWA 模式下隐藏强制提示 */
+body.is-ios.is-pwa .ios-pwa-required {
+    display: none !important;
 }
