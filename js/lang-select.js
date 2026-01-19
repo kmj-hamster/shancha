@@ -112,7 +112,7 @@ class LangSelect {
       }
 
       const script = document.createElement('script')
-      script.src = `../data/cards-data-${lang}.js`
+      script.src = `./data/cards-data-${lang}.js`
       script.onload = () => {
         console.log(`[LangSelect] Loaded ${lang} game data`)
         resolve()

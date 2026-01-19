@@ -345,7 +345,7 @@ async function initApp() {
     }
 
     // 加载卡片数据
-    const loaded = await cardManager.loadCards('../data/cards.json');
+    const loaded = await cardManager.loadCards('./data/cards.json');
 
     if (!loaded) {
         console.error('[ERROR] Failed to load card data!');
