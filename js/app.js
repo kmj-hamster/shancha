@@ -20,6 +20,62 @@ function isMobileLandscape() {
     return window.matchMedia('(max-width: 932px) and (max-height: 500px) and (orientation: landscape)').matches;
 }
 
+// 平台检测函数
+function isAndroid() {
+    return /Android/i.test(navigator.userAgent);
+}
+
+function isIOS() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function isSafari() {
+    return /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+}
+
+// 检测是否已安装为 PWA
+function isPWA() {
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+}
+
+// 安卓端请求全屏
+function requestFullscreenOnAndroid() {
+    if (!isAndroid() || isPWA()) return;
+
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => {
+            console.log('[Fullscreen] Request denied:', err);
+        });
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    }
+}
+
+// 页面加载时检测平台并添加 class
+function detectPlatform() {
+    const body = document.body;
+
+    if (isIOS()) {
+        body.classList.add('is-ios');
+    } else if (isAndroid()) {
+        body.classList.add('is-android');
+    }
+
+    // 检测 PWA 模式
+    if (isPWA()) {
+        body.classList.add('is-pwa');
+    }
+}
+
+// 导出到全局
+window.isAndroid = isAndroid;
+window.isIOS = isIOS;
+window.isPWA = isPWA;
+window.requestFullscreenOnAndroid = requestFullscreenOnAndroid;
+window.detectPlatform = detectPlatform;
+
 // 模式状态管理
 let currentMode = 'search';  // 当前模式: 'search' | 'sort' | 'delete'
 let inputLocked = false;     // 输入锁定状态（排序/删除成功后 2s）

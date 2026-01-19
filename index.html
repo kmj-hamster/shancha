@@ -55,7 +55,59 @@
   <div class="mobile-rotate-hint">
     <div class="rotate-text-zh">请将设备旋转至横屏模式</div>
     <div class="rotate-text-en">Please rotate your device to landscape</div>
+
+    <!-- PWA 安装引导 -->
+    <div class="pwa-guide">
+      <div class="pwa-guide-title">
+        <span class="pwa-title-zh">获得最佳体验</span>
+        <span class="pwa-title-en">For the best experience</span>
+      </div>
+
+      <!-- iOS 引导 -->
+      <div class="pwa-guide-ios">
+        <div class="pwa-step">
+          <span class="pwa-icon">&#xfe52;</span>
+          <span class="pwa-text-zh">点击底部 <strong>分享</strong> 按钮</span>
+          <span class="pwa-text-en">Tap <strong>Share</strong> button below</span>
+        </div>
+        <div class="pwa-step">
+          <span class="pwa-icon">+</span>
+          <span class="pwa-text-zh">选择 <strong>添加到主屏幕</strong></span>
+          <span class="pwa-text-en">Select <strong>Add to Home Screen</strong></span>
+        </div>
+      </div>
+
+      <!-- Android 引导 -->
+      <div class="pwa-guide-android">
+        <div class="pwa-step">
+          <span class="pwa-icon">&#8942;</span>
+          <span class="pwa-text-zh">点击右上角 <strong>菜单</strong> &#8942;</span>
+          <span class="pwa-text-en">Tap <strong>Menu</strong> &#8942; (top right)</span>
+        </div>
+        <div class="pwa-step">
+          <span class="pwa-icon">+</span>
+          <span class="pwa-text-zh">选择 <strong>添加到主屏幕</strong></span>
+          <span class="pwa-text-en">Select <strong>Add to Home Screen</strong></span>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- 平台检测脚本（需要在 body 标签后立即执行） -->
+  <script>
+    (function() {
+      var ua = navigator.userAgent;
+      if (/iPhone|iPad|iPod/i.test(ua)) {
+        document.body.classList.add('is-ios');
+      } else if (/Android/i.test(ua)) {
+        document.body.classList.add('is-android');
+      }
+      // 检测 PWA 模式
+      if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+        document.body.classList.add('is-pwa');
+      }
+    })();
+  </script>
 
   <!-- CRT Monitor Wrapper -->
   <div class="monitor-bezel">
