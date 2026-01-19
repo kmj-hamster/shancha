@@ -40,9 +40,9 @@ class AudioManager {
         // 音频路径配置
         this.basePath = '../assets/audio/';
         this.sfxPath = this.basePath + 'sfx/';
-        // BGM和自定义音效统一使用sound目录
-        this.musicPath = '../sound/';
-        this.customSfxPath = '../sound/';
+        // BGM和自定义音效统一使用CDN加速
+        this.musicPath = 'https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/';
+        this.customSfxPath = 'https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/';
     }
 
     /**

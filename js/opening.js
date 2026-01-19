@@ -161,7 +161,7 @@ class OpeningScreen {
    */
   tryMutedPlayback() {
     const audio = new Audio()
-    audio.src = `../sound/Memory.mp3`
+    audio.src = `https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/Memory.mp3`
     audio.loop = true
     audio.muted = true  // 关键：先静音
     audio.volume = 0.35  // music volume (0.5) * master volume (0.7)
