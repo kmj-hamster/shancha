@@ -283,7 +283,7 @@
     0 0 20px #00FF00,
     0 0 30px #00FF00;
   font-family: 'Fira Code', 'Zpix', 'Courier New', monospace;
-  animation: warning-pulse 1.5s ease-in-out infinite;
+  animation: warning-pulse 2.5s ease-in-out infinite;
 }
 
 @keyframes warning-pulse {
@@ -295,10 +295,11 @@
       0 0 30px #00FF00;
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.92;
     text-shadow:
-      0 0 5px #00FF00,
-      0 0 10px #00FF00;
+      0 0 8px #00FF00,
+      0 0 15px #00FF00,
+      0 0 22px #00FF00;
   }
 }
 
