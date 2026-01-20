@@ -1455,8 +1455,8 @@ function handleFileClick(event) {
     gameState.setCurrentCard(cardId);
     currentCard = card;
 
-    // 刷新UI
-    refreshUI();
+    // 刷新UI（读文件时列表不滚动）
+    refreshUI(false);
 }
 
 /**
@@ -2010,9 +2010,10 @@ function triggerUnlockFlash(cardIds) {
 
 /**
  * 刷新整个UI
+ * @param {boolean} scrollListToBottom - 是否滚动列表到底部（默认true）
  */
-function refreshUI() {
-    refreshFileList();
+function refreshUI(scrollListToBottom = true) {
+    refreshFileList(scrollListToBottom);
     refreshStatistics();
     updateCommandHelp();  // 更新指令帮助区域（P4.1 已移除，保留兼容）
     updateFunctionBar();  // 更新状态按钮栏（P4.6）
@@ -2025,8 +2026,9 @@ function refreshUI() {
 
 /**
  * 刷新文件列表
+ * @param {boolean} scrollToBottom - 是否滚动到底部（默认true）
  */
-function refreshFileList() {
+function refreshFileList(scrollToBottom = true) {
     const fileList = document.querySelector('.file-list');
 
     if (!fileList) {
@@ -2039,7 +2041,7 @@ function refreshFileList() {
 
     if (currentTab === 'clue') {
         // 显示线索词列表
-        displayClueList();
+        displayClueList(scrollToBottom);
         // 刷新scramble特效
         if (scrambleEffect && scrambleEffect.enabled) {
             scrambleEffect.refresh();
@@ -2074,18 +2076,21 @@ function refreshFileList() {
         scrambleEffect.refresh();
     }
 
-    // 滚动位置：file_018 解锁后滚动到顶部，否则滚动到底部
-    if (gameState.isCardUnlocked('file_018')) {
-        fileList.scrollTop = 0;
-    } else {
-        fileList.scrollTop = fileList.scrollHeight;
+    // 滚动位置：仅在需要时滚动（切换Tab时滚动，读文件时不滚动）
+    if (scrollToBottom) {
+        if (gameState.isCardUnlocked('file_018')) {
+            fileList.scrollTop = 0;
+        } else {
+            fileList.scrollTop = fileList.scrollHeight;
+        }
     }
 }
 
 /**
  * 显示线索词列表
+ * @param {boolean} scrollToBottom - 是否滚动到底部（默认true）
  */
-function displayClueList() {
+function displayClueList(scrollToBottom = true) {
     const fileList = document.querySelector('.file-list');
     if (!fileList) return;
 
@@ -2100,11 +2105,13 @@ function displayClueList() {
         scrambleEffect.refresh();
     }
 
-    // 滚动位置：file_018 解锁后滚动到顶部，否则滚动到底部
-    if (gameState.isCardUnlocked('file_018')) {
-        fileList.scrollTop = 0;
-    } else {
-        fileList.scrollTop = fileList.scrollHeight;
+    // 滚动位置：仅在需要时滚动（切换Tab时滚动，读文件时不滚动）
+    if (scrollToBottom) {
+        if (gameState.isCardUnlocked('file_018')) {
+            fileList.scrollTop = 0;
+        } else {
+            fileList.scrollTop = fileList.scrollHeight;
+        }
     }
 }
 
@@ -2705,8 +2712,11 @@ function fillClueToInput(clueText) {
     // 填充新的clue（覆盖原有内容）
     input.value = clueText;
 
-    // 不自动聚焦输入框，避免手机端唤起键盘
-    // 用户需手动点击终端区域才会唤起键盘
+    // 电脑端自动聚焦，方便直接按回车搜索
+    // 手机端不自动聚焦，避免唤起键盘
+    if (!isMobileLandscape()) {
+        input.focus();
+    }
 
     // 更新光标位置
     if (window.updateCursorPosition) {
