@@ -33,23 +33,54 @@ function isSafari() {
     return /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
 }
 
-// 检测是否已安装为 PWA
-function isPWA() {
-    return window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
+// 检测当前 display mode
+function getDisplayMode() {
+    const modes = ['fullscreen', 'standalone', 'minimal-ui', 'browser'];
+    for (const mode of modes) {
+        if (window.matchMedia(`(display-mode: ${mode})`).matches) {
+            return mode;
+        }
+    }
+    // iOS Safari 特殊检测
+    if (window.navigator.standalone === true) return 'standalone';
+    return 'browser';
 }
 
-// 安卓端请求全屏
+// 检测是否已安装为 PWA（任何非浏览器模式）
+function isPWA() {
+    return getDisplayMode() !== 'browser';
+}
+
+// 检测是否已处于全屏
+function isFullscreen() {
+    return getDisplayMode() === 'fullscreen'
+        || document.fullscreenElement
+        || document.webkitFullscreenElement;
+}
+
+// 检测 Android 浏览器类型
+function detectAndroidBrowser() {
+    const ua = navigator.userAgent;
+    if (/MiuiBrowser/i.test(ua)) return 'miui';
+    if (/SamsungBrowser/i.test(ua)) return 'samsung';
+    if (/HuaweiBrowser/i.test(ua)) return 'huawei';
+    if (/Edg/i.test(ua)) return 'edge';
+    if (/Chrome/i.test(ua)) return 'chrome';
+    return 'other';
+}
+
+// 安卓端请求全屏（改进版 - PWA 模式下也尝试）
 function requestFullscreenOnAndroid() {
-    if (!isAndroid() || isPWA()) return;
+    if (!isAndroid()) return;
+    if (isFullscreen()) return;  // 已全屏则跳过
 
     const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch(err => {
+    const requestFS = elem.requestFullscreen || elem.webkitRequestFullscreen;
+
+    if (requestFS) {
+        requestFS.call(elem, { navigationUI: 'hide' }).catch(err => {
             console.log('[Fullscreen] Request denied:', err);
         });
-    } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
     }
 }
 
@@ -61,18 +92,25 @@ function detectPlatform() {
         body.classList.add('is-ios');
     } else if (isAndroid()) {
         body.classList.add('is-android');
+        body.classList.add(`browser-${detectAndroidBrowser()}`);
     }
 
     // 检测 PWA 模式
     if (isPWA()) {
         body.classList.add('is-pwa');
     }
+
+    // 添加 display mode class
+    body.classList.add(`display-mode-${getDisplayMode()}`);
 }
 
 // 导出到全局
 window.isAndroid = isAndroid;
 window.isIOS = isIOS;
 window.isPWA = isPWA;
+window.isFullscreen = isFullscreen;
+window.getDisplayMode = getDisplayMode;
+window.detectAndroidBrowser = detectAndroidBrowser;
 window.requestFullscreenOnAndroid = requestFullscreenOnAndroid;
 window.detectPlatform = detectPlatform;
 
