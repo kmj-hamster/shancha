@@ -39,6 +39,9 @@ class LangSelect {
    * 初始化语言选择界面
    */
   init() {
+    // 保存实例到全局，以便返回时重置状态
+    window._langSelectInstance = this
+
     const langBtns = document.querySelectorAll('.lang-btn')
     langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -170,6 +173,33 @@ class LangSelect {
       return
     }
 
+    // 检查是否已经看过警告和耳机动画
+    const introShown = localStorage.getItem('introAnimationShown') === 'true'
+
+    if (introShown) {
+      // 跳过动画，直接显示 Opening
+      console.log('[LangSelect] Intro animation already shown, skipping...')
+      langScreen.classList.add('fade-out')
+
+      setTimeout(() => {
+        langScreen.classList.add('hidden')
+        langScreen.classList.remove('fade-out')
+
+        openingScreen.style.display = 'flex'
+        openingScreen.style.opacity = '0'
+        openingScreen.style.animation = 'opening-fade-in 0.5s forwards'
+
+        if (this.onLanguageSelected) {
+          this.onLanguageSelected(lang)
+        }
+
+        this.isTransitioning = false
+        console.log('[LangSelect] Transitioned to Opening (skipped intro)')
+      }, this.fadeOutDuration)
+      return
+    }
+
+    // 首次显示完整动画序列
     // 先显示警告界面（在语言选择界面下方，z-index 5800 < 6000）
     // 然后再淡出语言选择界面，这样就不会看到灰色边框
     this.prepareWarningScreen(lang)
@@ -186,6 +216,10 @@ class LangSelect {
       this.startWarningCountdown(() => {
         // 警告界面结束后，显示耳机界面
         this.showHeadphoneScreen(lang, () => {
+          // 动画完成，设置标志（下次跳过）
+          localStorage.setItem('introAnimationShown', 'true')
+          console.log('[LangSelect] Intro animation shown, flag set')
+
           // 耳机界面结束后，显示Opening界面
           openingScreen.style.display = 'flex'
           openingScreen.style.opacity = '0'
@@ -313,6 +347,34 @@ class LangSelect {
 
     // 清除语言设置
     localStorage.removeItem('gameLang')
+
+    // 确保 LangSelect 实例存在并初始化
+    // 路径2（有语言无存档）进入时不会创建 LangSelect，需要在这里创建
+    if (!window._langSelectInstance) {
+      const langSelect = new LangSelect({
+        fadeOutDuration: 400,
+        onLanguageSelected: (lang) => {
+          console.log(`[LangSelect] Language selected: ${lang}, initializing Opening...`)
+          const opening = new OpeningScreen({
+            fadeOutDuration: 1000,
+            bootDelay: 500,
+            onComplete: () => {
+              console.log('[Init] Opening completed, starting game...')
+              window.openingActive = false
+              if (typeof initApp === 'function') {
+                initApp()
+              }
+            }
+          })
+          opening.init()
+        }
+      })
+      langSelect.init()
+      console.log('[LangSelect] Created new instance for return flow')
+    } else {
+      // 已有实例，重置状态
+      window._langSelectInstance.isTransitioning = false
+    }
 
     // 淡出Opening
     openingScreen.classList.add('fade-out')

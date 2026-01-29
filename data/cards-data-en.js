@@ -2642,7 +2642,7 @@ const CARDS_DATA = {
         }
 ,
         {
-          "text": "Click a clue word, or type it into the terminal, then press Enter.",
+          "text": "Click a clue word, or type it into the terminal, then press Enter, or click the [SEARCH] button.",
           "style": "default",
           "breakAfter": true
         }

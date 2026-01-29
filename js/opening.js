@@ -20,6 +20,21 @@ const OPENING_TEXTS = {
   }
 }
 
+// 英文版 ASCII 艺术（BURNING MEMORY）- 用于语言切换时恢复
+const ASCII_ART_EN = `██████╗ ██╗   ██╗██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗
+██╔══██╗██║   ██║██╔══██╗████╗  ██║██║████╗  ██║██╔════╝
+██████╔╝██║   ██║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗
+██╔══██╗██║   ██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║
+██████╔╝╚██████╔╝██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝
+╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝
+
+███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║
+╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝`
+
 class OpeningScreen {
   constructor(options = {}) {
     this.onComplete = options.onComplete || null
@@ -30,6 +45,13 @@ class OpeningScreen {
     // 国际化
     this.lang = localStorage.getItem('gameLang') || 'en'
     this.texts = OPENING_TEXTS[this.lang] || OPENING_TEXTS.en
+
+    // 绑定事件处理函数（用于添加/移除监听器，防止重复绑定）
+    this._handleLoginClick = this.handleLogin.bind(this)
+    this._handleBackClick = (e) => {
+      e.stopPropagation()
+      this.handleBackToLangSelect()
+    }
   }
 
   /**
@@ -37,17 +59,23 @@ class OpeningScreen {
    */
   init() {
     const loginButton = document.querySelector('.login-button')
+    const backButton = document.querySelector('.back-to-lang-btn')
+
+    // 先移除可能存在的旧监听器（防止重复绑定导致Android上卡死）
     if (loginButton) {
-      loginButton.addEventListener('click', () => this.handleLogin())
+      if (window._openingLoginHandler) {
+        loginButton.removeEventListener('click', window._openingLoginHandler)
+      }
+      window._openingLoginHandler = this._handleLoginClick
+      loginButton.addEventListener('click', this._handleLoginClick)
     }
 
-    // 添加返回按钮事件
-    const backButton = document.querySelector('.back-to-lang-btn')
     if (backButton) {
-      backButton.addEventListener('click', (e) => {
-        e.stopPropagation()
-        this.handleBackToLangSelect()
-      })
+      if (window._openingBackHandler) {
+        backButton.removeEventListener('click', window._openingBackHandler)
+      }
+      window._openingBackHandler = this._handleBackClick
+      backButton.addEventListener('click', this._handleBackClick)
     }
 
     // 添加键盘Enter支持
@@ -107,6 +135,8 @@ class OpeningScreen {
       }
       if (asciiArt) {
         asciiArt.classList.remove('ascii-art-zh')
+        // 使用常量恢复英文 ASCII 艺术
+        asciiArt.textContent = ASCII_ART_EN
       }
       // 英文版：移除按钮组偏移
       const buttonsGroup = document.querySelector('.opening-buttons')
@@ -126,6 +156,19 @@ class OpeningScreen {
 
     // 移除键盘监听
     document.removeEventListener('keydown', this.keydownHandler)
+
+    // 移除按钮监听器（防止返回后再次选择语言时重复绑定）
+    const loginButton = document.querySelector('.login-button')
+    const backButton = document.querySelector('.back-to-lang-btn')
+
+    if (loginButton && window._openingLoginHandler) {
+      loginButton.removeEventListener('click', window._openingLoginHandler)
+      window._openingLoginHandler = null
+    }
+    if (backButton && window._openingBackHandler) {
+      backButton.removeEventListener('click', window._openingBackHandler)
+      window._openingBackHandler = null
+    }
 
     // 调用LangSelect的返回方法
     if (typeof LangSelect !== 'undefined') {

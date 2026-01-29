@@ -7,7 +7,7 @@
 /* ========== 语言选择界面容器 ========== */
 .lang-select-screen {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -230,6 +230,48 @@
   }
 }
 
+/* ========== 小屏幕 (< 400px) ========== */
+@media (max-width: 400px) {
+  .lang-select-frame {
+    padding: 30px 15px;
+  }
+
+  .lang-title {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .lang-title-sub {
+    font-size: 14px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+  }
+
+  .lang-btn {
+    width: 180px;
+    padding: 12px 20px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+}
+
+/* ========== 超小屏幕 (< 320px) ========== */
+@media (max-width: 320px) {
+  .lang-title {
+    font-size: 14px;
+  }
+
+  .lang-title-sub {
+    font-size: 12px;
+  }
+
+  .lang-btn {
+    width: 160px;
+    padding: 10px 15px;
+    font-size: 12px;
+  }
+}
+
 /* ========== 性能优化 ========== */
 .lang-select-screen,
 .lang-select-frame,
@@ -247,7 +289,7 @@
 /* ========== 警告界面容器 ========== */
 .warning-screen {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -318,7 +360,7 @@
 /* ========== 耳机建议界面容器 ========== */
 .headphone-screen {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   justify-content: center;
   align-items: center;

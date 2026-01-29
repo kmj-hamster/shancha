@@ -11,7 +11,7 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background: #000000;
   color: #00FF00;
   font-family: 'Zpix', 'Fira Code', 'Courier New', monospace;
@@ -194,7 +194,7 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background: #000000;
   z-index: 10000;
   opacity: 0;

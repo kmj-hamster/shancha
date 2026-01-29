@@ -479,11 +479,33 @@ class AudioManager {
     switchMusic(musicId, duration = 1000) {
         if (this.currentMusicId === musicId) return;
 
-        // 停止循环淡入淡出状态
-        this.stopLoopFade();
+        // 先保存旧音频的引用和音量（在 stopLoopFade 之前）
+        let oldMusic = this.currentMusic;
+        let oldVolume = oldMusic ? oldMusic.volume : 0;
 
-        const oldMusic = this.currentMusic;
-        const oldVolume = oldMusic ? oldMusic.volume : 0;
+        // 如果使用循环淡入淡出模式，从 loopFadeState 获取音频
+        if (this.loopFadeState) {
+            const loopAudio = this.loopFadeState.currentAudio || this.loopFadeState.audio;
+            if (loopAudio) {
+                oldMusic = loopAudio;
+                oldVolume = loopAudio.volume;
+            }
+            // 清理定时器和事件监听，但不立即停止音频
+            if (this.loopFadeState.fadeInterval) {
+                clearInterval(this.loopFadeState.fadeInterval);
+            }
+            if (this.loopFadeState.timeUpdateHandler && this.loopFadeState.currentAudio) {
+                this.loopFadeState.currentAudio.removeEventListener('timeupdate', this.loopFadeState.timeUpdateHandler);
+            }
+            if (this.loopFadeState.nextAudio) {
+                if (this.loopFadeState.timeUpdateHandler) {
+                    this.loopFadeState.nextAudio.removeEventListener('timeupdate', this.loopFadeState.timeUpdateHandler);
+                }
+                this.loopFadeState.nextAudio.pause();
+                this.loopFadeState.nextAudio.src = '';
+            }
+            this.loopFadeState = null;
+        }
 
         // 创建新音乐（音量为0）
         const newMusic = new Audio();

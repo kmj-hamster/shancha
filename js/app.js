@@ -943,6 +943,7 @@ function executeReset() {
     localStorage.removeItem('gameState');
     localStorage.removeItem('saveTime');
     localStorage.removeItem('gameLang');
+    localStorage.removeItem('introAnimationShown');
 
     console.log('[Reset] localStorage cleared, reloading...');
 

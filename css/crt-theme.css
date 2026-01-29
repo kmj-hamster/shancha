@@ -20,7 +20,7 @@ body {
     /* 安全区域支持 - Safe Area Support for notch screens */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
     width: 100vw !important;
-    height: 100vh !important;
+    height: calc(var(--vh, 1vh) * 100) !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -351,7 +351,7 @@ body.lang-en .ecg-label-en {
     /* 隐藏灰色边框，内容全屏 */
     .monitor-bezel {
         width: 100vw;
-        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
         max-width: 100vw;
         padding: 0;
         background: transparent;
@@ -408,6 +408,9 @@ body.lang-en .ecg-label-en {
         font-size: 18px !important;
         margin: 0 !important;
         line-height: 1.3 !important;
+        /* 横屏模式也允许换行 */
+        white-space: normal !important;
+        word-break: break-word !important;
     }
 
     /* 手机横屏只显示最新的1条系统消息 */
@@ -448,7 +451,7 @@ body.lang-en .ecg-label-en {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
     background: #080808;
     z-index: 9999;
     flex-direction: column;
@@ -588,7 +591,7 @@ body.lang-en .pwa-guide .pwa-title-zh {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
     background: #080808;
     z-index: 10000;  /* 高于所有元素 */
     flex-direction: column;

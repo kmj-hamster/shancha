@@ -88,7 +88,7 @@ body.theme-delete {
 /* Body样式 - Body Styles */
 body {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background-color: var(--bg-black);
   color: var(--terminal-green);
@@ -291,9 +291,11 @@ body.lang-en .text-content {
   font-size: 22px; /* P4 修复：与 prompt/input 统一 */
   line-height: 1.4;
   opacity: 0.85;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* 允许换行显示完整消息，修复小屏幕截断问题 */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word;
   transition: color 0.3s ease;
 }
 
@@ -814,7 +816,7 @@ body.reading-mode .system-output {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background-color: rgba(0, 0, 0, 0.85);
   z-index: 10000;
   justify-content: center;
@@ -888,4 +890,47 @@ body.reading-mode .system-output {
 
 .reset-btn.cancel:hover {
   opacity: 1;
+}
+
+/* ========== 超小屏幕适配 (< 400px) ========== */
+@media (max-width: 400px) {
+  body {
+    font-size: 16px;
+  }
+
+  .output-line {
+    font-size: 18px;
+  }
+
+  .prompt,
+  .command-input {
+    font-size: 18px;
+  }
+
+  .func-btn {
+    font-size: 14px;
+    padding: 4px 6px;
+  }
+
+  .file-item {
+    font-size: 16px;
+    padding: 6px 4px 6px 16px;
+  }
+
+  .tab-btn {
+    font-size: 14px;
+    padding: 4px;
+  }
+
+  .card-filename {
+    font-size: 16px;
+  }
+
+  .text-content {
+    font-size: 16px;
+  }
+
+  .statistics {
+    font-size: 16px;
+  }
 }
