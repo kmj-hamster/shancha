@@ -537,16 +537,19 @@
   </script>
 
   <!-- 简单防护：禁用右键和开发者工具快捷键 -->
+  <!-- 调试模式：URL添加 ?debug=1 可禁用此限制 -->
   <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-      if (e.key === 'F12' ||
-          (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
-          (e.ctrlKey && (e.key === 'U' || e.key === 'u')) ||
-          (e.ctrlKey && (e.key === 'S' || e.key === 's'))) {
-        e.preventDefault();
-      }
-    });
+    if (!urlParams.get('debug')) {
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('keydown', e => {
+        if (e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u')) ||
+            (e.ctrlKey && (e.key === 'S' || e.key === 's'))) {
+          e.preventDefault();
+        }
+      });
+    }
   </script>
 
   <!-- Service Worker 注册 -->

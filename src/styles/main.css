@@ -628,6 +628,7 @@ body.theme-delete .statistics {
 .tab-switch {
   height: 50px;
   padding: 8px;
+  padding-right: 16px; /* 避免和右侧虚线重叠 */
   display: flex;
   align-items: center;
   justify-content: space-around;

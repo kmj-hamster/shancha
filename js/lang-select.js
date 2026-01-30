@@ -107,23 +107,46 @@ class LangSelect {
    */
   static loadGameData(lang) {
     return new Promise((resolve, reject) => {
-      // 检查是否已加载
-      if (window.CARDS_DATA) {
-        console.log('[LangSelect] Game data already loaded')
-        resolve()
-        return
+      // 移除旧脚本（如果存在）
+      const oldScript = document.querySelector('script[src*="cards-data-"]')
+      if (oldScript) {
+        console.log('[LangSelect] Removing old game data script')
+        oldScript.remove()
       }
 
+      // 清除旧数据
+      if (window.CARDS_DATA) {
+        console.log('[LangSelect] Clearing old game data')
+        delete window.CARDS_DATA
+      }
+
+      // 加载新脚本
       const script = document.createElement('script')
       script.src = `./data/cards-data-${lang}.js`
+
+      // 超时机制
+      const timeout = setTimeout(() => {
+        console.error(`[LangSelect] Timeout loading ${lang} game data`)
+        reject(new Error(`Timeout loading cards-data-${lang}.js`))
+      }, 10000)
+
       script.onload = () => {
+        clearTimeout(timeout)
+        if (!window.CARDS_DATA) {
+          console.error(`[LangSelect] Script loaded but CARDS_DATA is undefined`)
+          reject(new Error(`CARDS_DATA not defined after loading cards-data-${lang}.js`))
+          return
+        }
         console.log(`[LangSelect] Loaded ${lang} game data`)
         resolve()
       }
+
       script.onerror = () => {
+        clearTimeout(timeout)
         console.error(`[LangSelect] Failed to load ${lang} game data`)
         reject(new Error(`Failed to load cards-data-${lang}.js`))
       }
+
       document.head.appendChild(script)
     })
   }
@@ -345,11 +368,22 @@ class LangSelect {
       return
     }
 
-    // 清除语言设置
+    // 1. 清除语言设置
     localStorage.removeItem('gameLang')
 
-    // 确保 LangSelect 实例存在并初始化
-    // 路径2（有语言无存档）进入时不会创建 LangSelect，需要在这里创建
+    // 2. 清除游戏数据
+    const oldScript = document.querySelector('script[src*="cards-data-"]')
+    if (oldScript) {
+      oldScript.remove()
+    }
+    delete window.CARDS_DATA
+
+    // 3. 停止音频
+    if (window.audioManager && window.audioManager.stopMusic) {
+      window.audioManager.stopMusic()
+    }
+
+    // 4. 确保 LangSelect 实例存在
     if (!window._langSelectInstance) {
       const langSelect = new LangSelect({
         fadeOutDuration: 400,
@@ -372,21 +406,18 @@ class LangSelect {
       langSelect.init()
       console.log('[LangSelect] Created new instance for return flow')
     } else {
-      // 已有实例，重置状态
       window._langSelectInstance.isTransitioning = false
     }
 
-    // 淡出Opening
+    // 5. 过渡动画
     openingScreen.classList.add('fade-out')
 
     setTimeout(() => {
-      // 隐藏Opening
       openingScreen.style.display = 'none'
       openingScreen.classList.remove('fade-out')
       openingScreen.style.opacity = '1'
       openingScreen.style.animation = ''
 
-      // 显示语言选择界面
       langScreen.classList.remove('hidden')
       langScreen.classList.add('fade-in')
 

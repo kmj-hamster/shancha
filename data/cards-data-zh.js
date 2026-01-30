@@ -1,4 +1,5 @@
-const CARDS_DATA = {
+// 使用 window.CARDS_DATA 以便支持动态重新加载
+window.CARDS_DATA = {
   "cards": [
     {
       "id": "mem_001",

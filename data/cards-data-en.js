@@ -1,8 +1,9 @@
 /**
  * 卡片数据
  * 将JSON数据转换为JS以避免CORS问题
+ * 使用 window.CARDS_DATA 以便支持动态重新加载
  */
-const CARDS_DATA = {
+window.CARDS_DATA = {
   "cards": [
     {
       "id": "mem_001",
@@ -34,7 +35,7 @@ const CARDS_DATA = {
           "breakAfter": true
         },
         {
-          "text": ""Your assignment is to bring this woman in." He taps the photo once. "The General says she stole state secrets."",
+          "text": "'Your assignment is to bring this woman in.' He taps the photo once. 'The General says she stole state secrets.'",
           "style": "default",
           "breakAfter": true
         },
@@ -388,7 +389,7 @@ const CARDS_DATA = {
           "breakAfter": true
         },
         {
-          "text": ""Has the General ever treated us like humans?" He points to his cloudy eye, then taps his ear. "I was already dead when I lay in that toxic ",
+          "text": "'Has the General ever treated us like humans?' He points to his cloudy eye, then taps his ear. 'I was already dead when I lay in that toxic ",
           "style": "default"
         },
         {
@@ -396,7 +397,7 @@ const CARDS_DATA = {
           "style": "clue"
         },
         {
-          "text": ".”",
+          "text": ".''",
           "style": "default",
           "breakAfter": true
         },
@@ -1694,7 +1695,7 @@ const CARDS_DATA = {
         }
 ,
         {
-          "text": "Notably, the regime's official narrative does not attribute these defeats to strategic or logistical errors. According to intelligence from internal meetings, General ████ attributes the root cause of failure to the "corrosion of morale" among his soldiers.",
+          "text": "Notably, the regime's official narrative does not attribute these defeats to strategic or logistical errors. According to intelligence from internal meetings, General ████ attributes the root cause of failure to the 'corrosion of morale' among his soldiers.",
           "style": "default"
         },
         {
@@ -1702,7 +1703,7 @@ const CARDS_DATA = {
           "style": "default"
         },
         {
-          "text": "His official report states that the psychological impact of battlefield trauma and defeat are the core factors eroding his army's will to fight. We assess the regime is likely to take extreme measures to address this "psychological problem." We will continue to monitor this closely.",
+          "text": "His official report states that the psychological impact of battlefield trauma and defeat are the core factors eroding his army's will to fight. We assess the regime is likely to take extreme measures to address this 'psychological problem.' We will continue to monitor this closely.",
           "style": "default"
         }
       ],
@@ -4059,7 +4060,7 @@ const CARDS_DATA = {
   }
 };
 
-// 导出给其他模块使用
+// 导出给其他模块使用（Node.js环境）
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CARDS_DATA;
+    module.exports = window.CARDS_DATA;
 }

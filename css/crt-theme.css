@@ -395,7 +395,7 @@ body.lang-en .ecg-label-en {
         justify-content: flex-start !important;
         gap: 4px !important;
         padding-left: 4px !important;
-        padding-right: 8px !important;
+        padding-right: 16px !important; /* 避免和右侧虚线重叠 */
     }
 
     /* 选中标签发光效果减小 */
