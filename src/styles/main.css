@@ -197,6 +197,7 @@ body {
 /* 卡片内容滚动区 - Card Scroll Area */
 .card-scroll {
   flex: 1;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: 20px;
   /* 禁用文字选择 - Disable Text Selection */
@@ -468,6 +469,7 @@ body.lang-en .text-content {
   flex: 1;
   border-bottom: 1px solid var(--dark-green);
   padding: 8px;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 

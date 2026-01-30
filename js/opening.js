@@ -196,7 +196,7 @@ class OpeningScreen {
     // 🎵 播放Opening音效
     if (window.audioManager) {
       console.log('[BGM] Playing Opening SFX (12s)...')
-      audioManager.playSFX('Opening.wav', 1, true)  // 使用customSfxPath，完整文件名
+      audioManager.playSFX('Opening.ogg', 1, true)  // 使用customSfxPath，完整文件名
 
       // 12秒后（Opening音效结束）播放Atmosphere BGM（带交叉淡入淡出循环）
       setTimeout(() => {

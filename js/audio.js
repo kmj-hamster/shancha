@@ -73,7 +73,7 @@ class AudioManager {
             const basePath = useCustomPath ? this.customSfxPath : this.sfxPath;
             // 检查是否已有扩展名（支持.mp3, .wav, .ogg, .m4a等）
             const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(soundId);
-            const fileName = hasExtension ? soundId : `${soundId}.mp3`;
+            const fileName = hasExtension ? soundId : `${soundId}.ogg`;
             audio.src = `${basePath}${fileName}`;
 
             console.log(`[AudioManager] Audio source set to: ${audio.src}`);
@@ -128,7 +128,7 @@ class AudioManager {
             this.currentMusic = new Audio();
             // 检查是否已有扩展名（支持.mp3, .wav, .ogg, .m4a等）
             const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-            const fileName = hasExtension ? musicId : `${musicId}.mp3`;
+            const fileName = hasExtension ? musicId : `${musicId}.ogg`;
             this.currentMusic.src = `${this.musicPath}${fileName}`;
             this.currentMusic.loop = true;
 
@@ -184,7 +184,7 @@ class AudioManager {
 
             // 构建音频路径
             const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-            const fileName = hasExtension ? musicId : `${musicId}.mp3`;
+            const fileName = hasExtension ? musicId : `${musicId}.ogg`;
             const audioSrc = `${this.musicPath}${fileName}`;
 
             // 创建第一个音频实例
@@ -511,7 +511,7 @@ class AudioManager {
         const newMusic = new Audio();
         // 检查是否已有扩展名（支持.mp3, .wav, .ogg, .m4a等）
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-        const fileName = hasExtension ? musicId : `${musicId}.mp3`;
+        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
         newMusic.src = `${this.musicPath}${fileName}`;
         newMusic.loop = true;
         newMusic.volume = 0;
@@ -674,7 +674,7 @@ class AudioManager {
         for (const id of soundIds) {
             try {
                 const audio = new Audio();
-                audio.src = `${this.sfxPath}${id}.mp3`;
+                audio.src = `${this.sfxPath}${id}.ogg`;
                 audio.load();
                 this.sfxCache.set(id, audio.src);
             } catch (err) {
@@ -693,7 +693,7 @@ class AudioManager {
         if (this.muted) return { stop: () => {} };
 
         const audio = new Audio();
-        audio.src = `${this.sfxPath}${soundId}.mp3`;
+        audio.src = `${this.sfxPath}${soundId}.ogg`;
         audio.loop = true;
         audio.volume = volume * this.volumes.sfx * this.volumes.master;
 

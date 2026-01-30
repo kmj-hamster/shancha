@@ -17,7 +17,10 @@ const disabledTabs = new Set();  // 永久禁用的 tab 列表
 
 // 手机横屏检测（与 CSS 媒体查询保持一致）
 function isMobileLandscape() {
-    return window.matchMedia('(max-width: 932px) and (max-height: 500px) and (orientation: landscape)').matches;
+    return window.matchMedia(
+        '(max-height: 600px) and (orientation: landscape), ' +
+        '(min-aspect-ratio: 2/1) and (max-height: 1200px) and (orientation: landscape)'
+    ).matches;
 }
 
 // 平台检测函数
@@ -307,8 +310,8 @@ const CARD_BGM_MAP = {
     'file_018': 'Dream',        // 点击file_018时切换到Dream
     'file_015': 'Atmosphere',   // 点击file_015时切换到Atmosphere
     'mem_025': 'Dream',         // 点击mem_025时切换到Dream
-    'mem_012': 'Mozart.mp3',    // 初次点击mem_012时播放Mozart
-    'mem_015': 'Wagner.mp3',    // 初次点击mem_015时播放Wagner
+    'mem_012': 'Mozart.ogg',    // 初次点击mem_012时播放Mozart
+    'mem_015': 'Wagner.ogg',    // 初次点击mem_015时播放Wagner
     'mem_009': 'Memory'         // 初次阅读mem_009时切换回Memory
 };
 
@@ -789,13 +792,28 @@ function showConfirmPrompt(type) {
     if (!container) return;
 
     const lines = container.querySelectorAll('.output-line');
+    const isMobile = isMobileLandscape();
 
     if (type === 'are_you_sure') {
-        lines[0].textContent = TEXT.areYouSure;
-        lines[1].textContent = TEXT.yesNo;
+        if (isMobile) {
+            // 手机端：合并成一行显示在 lines[1]
+            lines[0].textContent = '';
+            lines[1].textContent = `${TEXT.areYouSure} ${TEXT.yesNo}`;
+        } else {
+            // PC端：分两行显示
+            lines[0].textContent = TEXT.areYouSure;
+            lines[1].textContent = TEXT.yesNo;
+        }
     } else if (type === 'enter_name') {
-        lines[0].textContent = TEXT.enterYourName;
-        lines[1].textContent = '';
+        if (isMobile) {
+            // 手机端：显示在 lines[1]
+            lines[0].textContent = '';
+            lines[1].textContent = TEXT.enterYourName;
+        } else {
+            // PC端：显示在 lines[0]
+            lines[0].textContent = TEXT.enterYourName;
+            lines[1].textContent = '';
+        }
     }
 
     // 添加高亮类
@@ -2209,23 +2227,35 @@ function showFeedback(message, type = 'info') {
     const container = document.querySelector('.system-output');
     if (container) {
         const lines = container.querySelectorAll('.output-line');
+        const isMobile = isMobileLandscape();
 
-        // 清空并重新填充
-        lines.forEach((line, index) => {
-            if (index < systemOutputLines.length) {
-                const msg = systemOutputLines[index];
-                line.textContent = msg.text;
-
-                // 根据类型设置颜色（error保持红色，其他跟随主题）
-                line.style.color = '';
-                if (msg.type === 'error') {
-                    line.style.color = '#ff6b6b'; // 柔和红色（不跟随主题）
-                }
-                // success 和 info 类型使用 CSS 变量，自动跟随主题
-            } else {
-                line.textContent = '';
-            }
+        // 清空所有行
+        lines.forEach(line => {
+            line.textContent = '';
+            line.style.color = '';
         });
+
+        if (isMobile) {
+            // 手机端：最新消息放在 lines[1]（唯一可见行）
+            if (systemOutputLines.length > 0) {
+                const msg = systemOutputLines[systemOutputLines.length - 1];
+                lines[1].textContent = msg.text;
+                if (msg.type === 'error') {
+                    lines[1].style.color = '#ff6b6b';
+                }
+            }
+        } else {
+            // PC端：正常两行显示
+            lines.forEach((line, index) => {
+                if (index < systemOutputLines.length) {
+                    const msg = systemOutputLines[index];
+                    line.textContent = msg.text;
+                    if (msg.type === 'error') {
+                        line.style.color = '#ff6b6b';
+                    }
+                }
+            });
+        }
     }
 }
 
@@ -3256,7 +3286,7 @@ function playDeletionAnimation2() {
     // 🎵 播放Error BGM（1秒淡入）
     if (window.audioManager) {
         console.log('[BGM] Playing Error BGM for deletion animation 2 (1s fade-in)...');
-        audioManager.playMusic('Error.mp3', 1, 1000);
+        audioManager.playMusic('Error.ogg', 1, 1000);
     }
 
     const deletion2 = new DeletionAnimation2({ glitchEnabled: true });

@@ -991,6 +991,16 @@ class MemoryDecayEffect {
             if (year) year.style.display = 'none';
         }
 
+        // 清空 system 输出区域
+        const systemOutput = document.querySelector('.system-output');
+        if (systemOutput) {
+            const outputLines = systemOutput.querySelectorAll('.output-line');
+            outputLines.forEach(line => {
+                line.textContent = '';
+                line.classList.remove('confirm-highlight');
+            });
+        }
+
         // 1. 先播放苏醒动画（遮盖屏幕）
         if (typeof AwakeningAnimation !== 'undefined') {
             const awakening = new AwakeningAnimation({
@@ -1013,7 +1023,7 @@ class MemoryDecayEffect {
             setTimeout(() => {
                 console.log('[BGM] Playing Opening SFX (12s)...');
                 if (window.audioManager) {
-                    audioManager.playSFX('Opening.wav', 1, true);
+                    audioManager.playSFX('Opening.ogg', 1, true);
                 }
             }, 2000);
 
@@ -1133,8 +1143,12 @@ class MemoryDecayEffect {
             return;
         }
 
-        const countdownLine = outputLines[0]; // 第一行显示倒计时
-        const secondLine = outputLines[1];    // 第二行清空
+        // 检测手机横屏模式（isMobileLandscape 定义在 app.js）
+        const isMobile = typeof isMobileLandscape === 'function' && isMobileLandscape();
+
+        // 手机端使用 lines[1]（唯一可见行），PC端使用 lines[0]
+        const countdownLine = isMobile ? outputLines[1] : outputLines[0];
+        const otherLine = isMobile ? outputLines[0] : outputLines[1];
 
         // 隐藏 SEARCH 和 SAVE 按钮
         const searchBtn = document.querySelector('.func-btn[data-mode="search"]');
@@ -1145,7 +1159,7 @@ class MemoryDecayEffect {
 
         // 清空两行内容
         countdownLine.textContent = '';
-        secondLine.textContent = '';
+        otherLine.textContent = '';
 
         // 本地化文本
         const terminatingText = currentLang === 'zh' ? '连接即将断开' : 'Connection terminating';
@@ -1154,7 +1168,7 @@ class MemoryDecayEffect {
         // 显示初始倒计时（带前缀）
         countdownLine.textContent = `> SYSTEM: ${terminatingText}, ${remainingSeconds}s...`;
 
-        console.log('[Countdown] Countdown display started in system-output line 1');
+        console.log('[Countdown] Countdown display started in line ' + (isMobile ? '2' : '1'));
 
         // 每秒更新一次
         const countdownInterval = setInterval(() => {
