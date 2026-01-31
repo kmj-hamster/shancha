@@ -1258,12 +1258,14 @@ class LineByLineController {
                     window.scrambleEffect.refresh();
                 }
 
-                // 滚动到底部
-                const scrollContainer = document.querySelector('.card-scroll');
-                if (scrollContainer) {
-                    setTimeout(() => {
-                        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-                    }, 50);
+                // 滚动到底部（仅PC端）
+                if (typeof isMobileLandscape !== 'function' || !isMobileLandscape()) {
+                    const scrollContainer = document.querySelector('.card-scroll');
+                    if (scrollContainer) {
+                        setTimeout(() => {
+                            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                        }, 50);
+                    }
                 }
 
                 // 递增索引，用户点击后显示下一行
@@ -1298,19 +1300,21 @@ class LineByLineController {
                 // 普通段落，正常显示
                 nextParagraph.style.display = 'block';
 
-                // 平滑滚动到新段落
-                const container = document.querySelector('.card-scroll');
-                if (container) {
-                    // 使用容器的滚动而不是元素的scrollIntoView
-                    setTimeout(() => {
-                        container.scrollTop = container.scrollHeight;
-                    }, 50);
-                } else {
-                    // 降级方案
-                    nextParagraph.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'end'
-                    });
+                // 平滑滚动到新段落（仅PC端）
+                if (typeof isMobileLandscape !== 'function' || !isMobileLandscape()) {
+                    const container = document.querySelector('.card-scroll');
+                    if (container) {
+                        // 使用容器的滚动而不是元素的scrollIntoView
+                        setTimeout(() => {
+                            container.scrollTop = container.scrollHeight;
+                        }, 50);
+                    } else {
+                        // 降级方案
+                        nextParagraph.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'end'
+                        });
+                    }
                 }
 
                 // 如果是全自动播放模式，自动触发下一段
@@ -1436,6 +1440,11 @@ class LineByLineController {
      * 自动滚动到底部
      */
     autoScroll() {
+        // 手机端不自动滚动
+        if (typeof isMobileLandscape === 'function' && isMobileLandscape()) {
+            return;
+        }
+
         const container = document.querySelector('.card-scroll');
         if (container) {
             container.scrollTo({
@@ -1454,13 +1463,8 @@ class LineByLineController {
      */
     showAutoPlayIndicator() {
         const textContent = document.querySelector('.text-content');
-        if (textContent && !document.querySelector('.auto-play-indicator')) {
+        if (textContent) {
             textContent.classList.add('auto-playing');
-
-            const indicator = document.createElement('div');
-            indicator.className = 'auto-play-indicator';
-            indicator.innerHTML = '▶ 自动播放中...';
-            textContent.insertBefore(indicator, textContent.firstChild);
         }
 
         // 隐藏 click to continue 提示

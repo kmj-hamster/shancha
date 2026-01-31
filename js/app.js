@@ -1005,8 +1005,6 @@ function handleSortMode() {
  * 已在该模式时，点击按钮等同于回车提交
  */
 function handleDeleteMode() {
-    if (confirmationLocked) return;  // 确认阶段禁止切换
-
     // 已在 DELETE 模式：点击按钮等同于回车提交
     if (currentMode === 'delete') {
         if (inputLocked) return;
@@ -1019,6 +1017,8 @@ function handleDeleteMode() {
         }
         return;
     }
+
+    if (confirmationLocked) return;  // 确认阶段禁止切换模式
 
     // ECG联动：进入DELETE模式变红+加速+起伏大
     if (window.ecgController) {
