@@ -1258,15 +1258,8 @@ class LineByLineController {
                     window.scrambleEffect.refresh();
                 }
 
-                // 滚动到底部（仅PC端）
-                if (typeof isMobileLandscape !== 'function' || !isMobileLandscape()) {
-                    const scrollContainer = document.querySelector('.card-scroll');
-                    if (scrollContainer) {
-                        setTimeout(() => {
-                            scrollContainer.scrollTop = scrollContainer.scrollHeight;
-                        }, 50);
-                    }
-                }
+                // 滚动到新内容
+                this.scrollToElement(selectedP);
 
                 // 递增索引，用户点击后显示下一行
                 this.currentIndex++;
@@ -1300,22 +1293,8 @@ class LineByLineController {
                 // 普通段落，正常显示
                 nextParagraph.style.display = 'block';
 
-                // 平滑滚动到新段落（仅PC端）
-                if (typeof isMobileLandscape !== 'function' || !isMobileLandscape()) {
-                    const container = document.querySelector('.card-scroll');
-                    if (container) {
-                        // 使用容器的滚动而不是元素的scrollIntoView
-                        setTimeout(() => {
-                            container.scrollTop = container.scrollHeight;
-                        }, 50);
-                    } else {
-                        // 降级方案
-                        nextParagraph.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'end'
-                        });
-                    }
-                }
+                // 滚动到新段落
+                this.scrollToElement(nextParagraph);
 
                 // 如果是全自动播放模式，自动触发下一段
                 if (this.fullAutoPlayMode && this.currentIndex < this.paragraphs.length - 1) {
@@ -1427,8 +1406,8 @@ class LineByLineController {
         p.style.display = 'block';
         p.classList.add('auto-sequence-fade-in');
 
-        // 自动滚动
-        this.autoScroll();
+        // 自动滚动到新段落
+        this.autoScroll(p);
 
         // 设置下一次播放
         this.autoPlayTimer = setTimeout(() => {
@@ -1437,21 +1416,42 @@ class LineByLineController {
     }
 
     /**
-     * 自动滚动到底部
+     * 滚动到指定段落（移动端：顶部对齐；PC端：滚动到底部）
      */
-    autoScroll() {
-        // 手机端不自动滚动
-        if (typeof isMobileLandscape === 'function' && isMobileLandscape()) {
-            return;
-        }
+    scrollToElement(targetElement) {
+        if (!targetElement) return;
 
         const container = document.querySelector('.card-scroll');
-        if (container) {
-            container.scrollTo({
-                top: container.scrollHeight,
-                behavior: 'smooth'
-            });
-            // 备用方案：如果scrollTo不工作，尝试直接设置scrollTop
+        if (!container) return;
+
+        const isMobile = typeof isMobileLandscape === 'function' && isMobileLandscape();
+
+        setTimeout(() => {
+            if (isMobile) {
+                // 计算元素相对于容器的偏移，滚动到元素顶部
+                const targetTop = targetElement.offsetTop - container.offsetTop;
+                container.scrollTo({ top: targetTop, behavior: 'smooth' });
+            } else {
+                container.scrollTop = container.scrollHeight;
+            }
+        }, 50);
+    }
+
+    /**
+     * 自动滚动（用于自动序列播放）
+     */
+    autoScroll(targetElement = null) {
+        const container = document.querySelector('.card-scroll');
+        if (!container) return;
+
+        const isMobile = typeof isMobileLandscape === 'function' && isMobileLandscape();
+
+        if (isMobile && targetElement) {
+            // 计算元素相对于容器的偏移，滚动到元素顶部
+            const targetTop = targetElement.offsetTop - container.offsetTop;
+            container.scrollTo({ top: targetTop, behavior: 'smooth' });
+        } else {
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
             }, 100);

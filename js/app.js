@@ -190,16 +190,16 @@ function initLocalization() {
         yearDisplayOff: currentLang === 'zh' ? '年份显示：关' : 'Year display: OFF',
 
         // Sort 模式提示
-        sortPromptTime: currentLang === 'zh' ? '> 输入 TIME 按时间排序' : '> Type TIME to sort memories by time',
-        sortPromptYear: currentLang === 'zh' ? '> 输入 YEAR 按年份排序' : '> Type YEAR to sort memories by year',
+        sortPromptTime: currentLang === 'zh' ? '> 输入 TIME 按时间排序，点击[排序]执行' : '> Type TIME to sort memories by time. Click [SORT] to execute',
+        sortPromptYear: currentLang === 'zh' ? '> 输入 YEAR 按年份排序，点击[排序]执行' : '> Type YEAR to sort memories by year. Click [SORT] to execute',
         systemSortComplete: currentLang === 'zh' ? '> 系统：排序完成！' : '> SYSTEM: Sort complete!',
         systemDetected1945: currentLang === 'zh'
             ? '> 系统：检测到21条1945年记忆...'
             : '> SYSTEM: Detected 21 memories from 1945...',
 
         // Delete 模式提示
-        deletePromptWord: currentLang === 'zh' ? '> 输入要删除的词（非线索词）' : '> Type a WORD to delete (not from clue list)',
-        deletePromptNumber: currentLang === 'zh' ? '> 输入编号以删除对应记忆' : '> Type a NUMBER to delete memory by ID',
+        deletePromptWord: currentLang === 'zh' ? '> 输入要删除的词（非线索词），点击[删除]执行' : '> Type a WORD to delete (not from clue list). Click [DELETE] to execute',
+        deletePromptNumber: currentLang === 'zh' ? '> 输入编号以删除对应记忆，点击[删除]执行' : '> Type a NUMBER to delete memory by ID. Click [DELETE] to execute',
         deleteExample: currentLang === 'zh'
             ? '例如，输入 /delete 1 删除记忆 1-8am-coffee'
             : 'For example, enter /delete 1 to delete memory 1-8am-coffee',
