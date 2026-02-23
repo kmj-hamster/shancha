@@ -359,8 +359,8 @@ body.lang-en .text-content {
   -moz-user-select: text;
   -ms-user-select: text;
   caret-color: transparent; /* 隐藏原生光标 */
-  /* P4 修复：宽度自适应内容 */
-  width: auto;
+  /* 占据剩余空间，解决iOS拼音输入composition时宽度收缩问题 */
+  flex: 1;
   min-width: 1ch;
   opacity: 0.85; /* P4 修复：与系统输出亮度一致 */
   transition: color 0.3s ease;
