@@ -99,7 +99,7 @@ body {
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   overscroll-behavior: none;
-  touch-action: manipulation; /* 允许触摸输入，只禁用双击缩放 */
+  touch-action: none;
   background-color: var(--bg-black);
   color: var(--terminal-green);
   font-family: 'VT323', 'Zpix', monospace;
