@@ -528,38 +528,64 @@ class AudioManager {
 
     /**
      * iOS 简化版：直接切换音乐（不使用淡入淡出）
+     * 关键修复：复用已授权的Audio对象，避免iOS自动播放限制
      */
     _switchMusicSimple(musicId) {
         console.log(`[AudioManager] iOS simple switch to: ${musicId}`);
 
         this._clearAllIntervals();
-
-        if (this.currentMusic) {
-            this.currentMusic.pause();
-            this.currentMusic.src = '';
-            this.currentMusic = null;
-        }
-
         this.stopLoopFade();
+
+        const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
+        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        const newSrc = `${this.musicPath}${fileName}`;
 
         if (this.muted) {
             this.currentMusicId = musicId;
             return;
         }
 
-        const audio = new Audio();
-        const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
-        audio.src = `${this.musicPath}${fileName}`;
-        audio.loop = true;
-
         const multiplier = this.getVolumeMultiplier(musicId);
-        audio.volume = this.volumes.music * this.volumes.master * multiplier;
+        const targetVolume = this.volumes.music * this.volumes.master * multiplier;
+
+        // iOS关键修复：复用已有的Audio对象（保持播放权限）
+        if (this.currentMusic) {
+            console.log(`[AudioManager] iOS: Reusing existing audio object for ${musicId}`);
+            this.currentMusic.pause();
+            this.currentMusic.src = newSrc;
+            this.currentMusic.loop = true;
+            this.currentMusic.volume = targetVolume;
+            this.currentMusic.currentTime = 0;
+
+            this.currentMusic.play().then(() => {
+                console.log(`[AudioManager] iOS: ${musicId} playing (reused)`);
+            }).catch(err => {
+                console.warn(`[AudioManager] iOS play failed (reused): ${musicId}`, err);
+                // 复用失败时尝试创建新对象
+                this._createAndPlayNewAudio(musicId, newSrc, targetVolume);
+            });
+
+            this.currentMusicId = musicId;
+        } else {
+            // 没有现有对象时才创建新的
+            this._createAndPlayNewAudio(musicId, newSrc, targetVolume);
+        }
+    }
+
+    /**
+     * iOS: 创建新的Audio对象并播放（仅在没有可复用对象时调用）
+     */
+    _createAndPlayNewAudio(musicId, src, volume) {
+        console.log(`[AudioManager] iOS: Creating new audio for ${musicId}`);
+        const audio = new Audio();
+        audio.src = src;
+        audio.loop = true;
+        audio.volume = volume;
 
         audio.play().then(() => {
-            console.log(`[AudioManager] iOS: ${musicId} playing`);
+            console.log(`[AudioManager] iOS: ${musicId} playing (new)`);
         }).catch(err => {
-            console.warn(`[AudioManager] iOS play failed: ${musicId}`, err);
+            console.warn(`[AudioManager] iOS play failed (new): ${musicId}`, err);
         });
 
         this.currentMusic = audio;
@@ -568,70 +594,129 @@ class AudioManager {
 
     /**
      * iOS 简化版：直接播放音乐
+     * 关键修复：复用已授权的Audio对象，避免iOS自动播放限制
      */
     _playMusicSimple(musicId, volume = 1, fadeInDuration = 0) {
         console.log(`[AudioManager] iOS simple play: ${musicId}`);
 
         this._clearAllIntervals();
-        this.stopMusic(0);
+        this.stopLoopFade();
 
         if (this.muted) {
             this.currentMusicId = musicId;
             return;
         }
 
-        const audio = new Audio();
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
         const fileName = hasExtension ? musicId : `${musicId}.ogg`;
-        audio.src = `${this.musicPath}${fileName}`;
-        audio.loop = true;
+        const newSrc = `${this.musicPath}${fileName}`;
 
         const multiplier = this.getVolumeMultiplier(musicId);
         const targetVolume = volume * this.volumes.music * this.volumes.master * multiplier;
 
-        if (fadeInDuration > 0) {
-            audio.volume = 0.1;
-            audio.play().then(() => {
-                setTimeout(() => {
-                    audio.volume = targetVolume;
-                }, Math.min(fadeInDuration, 500));
-            }).catch(err => {
-                console.warn(`[AudioManager] iOS play failed: ${musicId}`, err);
-            });
-        } else {
-            audio.volume = targetVolume;
-            audio.play().catch(err => {
-                console.warn(`[AudioManager] iOS play failed: ${musicId}`, err);
-            });
-        }
+        // iOS关键修复：复用已有的Audio对象（保持播放权限）
+        if (this.currentMusic) {
+            console.log(`[AudioManager] iOS: Reusing existing audio object for ${musicId}`);
+            this.currentMusic.pause();
+            this.currentMusic.src = newSrc;
+            this.currentMusic.loop = true;
+            this.currentMusic.currentTime = 0;
 
-        this.currentMusic = audio;
-        this.currentMusicId = musicId;
+            if (fadeInDuration > 0) {
+                this.currentMusic.volume = 0.1;
+                this.currentMusic.play().then(() => {
+                    console.log(`[AudioManager] iOS: ${musicId} playing (reused, fade-in)`);
+                    setTimeout(() => {
+                        if (this.currentMusic) {
+                            this.currentMusic.volume = targetVolume;
+                        }
+                    }, Math.min(fadeInDuration, 500));
+                }).catch(err => {
+                    console.warn(`[AudioManager] iOS play failed (reused): ${musicId}`, err);
+                    this._createAndPlayNewAudio(musicId, newSrc, targetVolume);
+                });
+            } else {
+                this.currentMusic.volume = targetVolume;
+                this.currentMusic.play().then(() => {
+                    console.log(`[AudioManager] iOS: ${musicId} playing (reused)`);
+                }).catch(err => {
+                    console.warn(`[AudioManager] iOS play failed (reused): ${musicId}`, err);
+                    this._createAndPlayNewAudio(musicId, newSrc, targetVolume);
+                });
+            }
+
+            this.currentMusicId = musicId;
+        } else {
+            // 没有现有对象时才创建新的
+            const audio = new Audio();
+            audio.src = newSrc;
+            audio.loop = true;
+
+            if (fadeInDuration > 0) {
+                audio.volume = 0.1;
+                audio.play().then(() => {
+                    console.log(`[AudioManager] iOS: ${musicId} playing (new, fade-in)`);
+                    setTimeout(() => {
+                        audio.volume = targetVolume;
+                    }, Math.min(fadeInDuration, 500));
+                }).catch(err => {
+                    console.warn(`[AudioManager] iOS play failed (new): ${musicId}`, err);
+                });
+            } else {
+                audio.volume = targetVolume;
+                audio.play().then(() => {
+                    console.log(`[AudioManager] iOS: ${musicId} playing (new)`);
+                }).catch(err => {
+                    console.warn(`[AudioManager] iOS play failed (new): ${musicId}`, err);
+                });
+            }
+
+            this.currentMusic = audio;
+            this.currentMusicId = musicId;
+        }
     }
 
     /**
      * iOS 简化版：循环播放（使用原生 loop）
+     * 关键修复：复用已授权的Audio对象，避免iOS自动播放限制
      */
     _playMusicWithLoopSimple(musicId, volume = 1) {
         console.log(`[AudioManager] iOS simple loop: ${musicId}`);
 
         this._clearAllIntervals();
         this.stopLoopFade();
-        this.stopMusic(0);
 
         if (this.muted) {
             this.currentMusicId = musicId;
             return;
         }
 
-        const audio = new Audio();
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
         const fileName = hasExtension ? musicId : `${musicId}.ogg`;
-        audio.src = `${this.musicPath}${fileName}`;
-        audio.loop = true;
+        const newSrc = `${this.musicPath}${fileName}`;
 
         const multiplier = this.getVolumeMultiplier(musicId);
-        audio.volume = volume * this.volumes.music * this.volumes.master * multiplier;
+        const targetVolume = volume * this.volumes.music * this.volumes.master * multiplier;
+
+        let audio;
+
+        // iOS关键修复：复用已有的Audio对象（保持播放权限）
+        if (this.currentMusic) {
+            console.log(`[AudioManager] iOS loop: Reusing existing audio object for ${musicId}`);
+            audio = this.currentMusic;
+            audio.pause();
+            audio.src = newSrc;
+            audio.loop = true;
+            audio.volume = targetVolume;
+            audio.currentTime = 0;
+        } else {
+            // 没有现有对象时才创建新的
+            console.log(`[AudioManager] iOS loop: Creating new audio for ${musicId}`);
+            audio = new Audio();
+            audio.src = newSrc;
+            audio.loop = true;
+            audio.volume = targetVolume;
+        }
 
         audio.play().then(() => {
             console.log(`[AudioManager] iOS loop: ${musicId} playing`);
@@ -755,7 +840,10 @@ class AudioManager {
         } else {
             this.currentMusic.pause();
             this.currentMusic.currentTime = 0;
-            this.currentMusic = null;
+            // iOS关键修复：保留Audio对象引用以便后续复用（保持播放权限）
+            if (!this.isIOS) {
+                this.currentMusic = null;
+            }
             this.currentMusicId = null;
         }
     }
@@ -953,7 +1041,10 @@ class AudioManager {
 
                 // 清理引用（只有当前音乐还是这个实例时才清理）
                 if (this.currentMusic === music) {
-                    this.currentMusic = null;
+                    // iOS关键修复：保留Audio对象引用以便后续复用（保持播放权限）
+                    if (!this.isIOS) {
+                        this.currentMusic = null;
+                    }
                     this.currentMusicId = null;
                 }
 
