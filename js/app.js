@@ -583,9 +583,23 @@ function initCursorFollow() {
     // 跟踪输入框是否为空的状态（用于search模式提示）
     let wasInputEmpty = true;
 
+    // iOS拼音输入法composition状态跟踪
+    let isComposing = false;
+    input.addEventListener('compositionstart', () => {
+        isComposing = true;
+    });
+    input.addEventListener('compositionend', () => {
+        isComposing = false;
+        updateInputWidth(); // composition结束后更新宽度
+    });
+
     // 监听输入事件
     input.addEventListener('input', () => {
-        updateInputWidth();
+        // iOS拼音输入法composition过程中，跳过宽度更新
+        // 因为此时input.value不包含正在输入的拼音
+        if (!isComposing) {
+            updateInputWidth();
+        }
 
         // 当terminal从空变为有内容时，在search模式下显示提示
         const currentValue = input.value.trim();
