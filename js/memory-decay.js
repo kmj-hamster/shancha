@@ -968,10 +968,14 @@ class MemoryDecayEffect {
     triggerAwakeningSequence() {
         console.log('🌅 Starting awakening sequence...');
 
-        // 🎵 淡出Dream BGM（2秒）
+        // 🎵 强制重置音频状态（iOS 修复：清理所有残留的 interval 和状态）
         if (window.audioManager) {
-            console.log('[BGM] Fading out Dream BGM (2s) for awakening sequence...');
-            audioManager.stopMusic(2000);
+            console.log('[BGM] Force resetting audio state for awakening sequence...');
+            if (typeof audioManager._clearAllIntervals === 'function') {
+                audioManager._clearAllIntervals();
+            }
+            audioManager.stopLoopFade();
+            audioManager.stopMusic(0);
         }
 
         // 清空内容显示框（右侧区域）

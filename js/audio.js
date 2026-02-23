@@ -43,6 +43,21 @@ class AudioManager {
         // BGM和自定义音效统一使用CDN加速
         this.musicPath = 'https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/';
         this.customSfxPath = 'https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/';
+
+        // iOS 检测（用于简化音频切换逻辑）
+        this.isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        // 跟踪所有活动的 interval（用于完整清理）
+        this.activeIntervals = new Set();
+    }
+
+    /**
+     * 清理所有活动的 interval（iOS 状态管理）
+     */
+    _clearAllIntervals() {
+        this.activeIntervals.forEach(id => clearInterval(id));
+        this.activeIntervals.clear();
+        console.log('[AudioManager] Cleared all intervals');
     }
 
     /**
@@ -118,6 +133,11 @@ class AudioManager {
             return;
         }
 
+        // iOS 使用简化版本（避免 setInterval volume 修改问题）
+        if (this.isIOS) {
+            return this._playMusicSimple(musicId, volume, fadeInDuration);
+        }
+
         // 停止当前音乐
         this.stopMusic();
 
@@ -171,6 +191,11 @@ class AudioManager {
      * @param {number} volume - 音量 (0-1)，可选
      */
     playMusicWithLoopFade(musicId, fadeInDuration = 2000, crossfadeDuration = 3000, volume = 1) {
+        // iOS 使用简化版本（原生 loop，避免 timeupdate 问题）
+        if (this.isIOS) {
+            return this._playMusicWithLoopSimple(musicId, volume);
+        }
+
         // 停止当前音乐和循环状态
         this.stopLoopFade();
         this.stopMusic();
@@ -218,6 +243,21 @@ class AudioManager {
                 this._checkCrossfadePoint();
             };
             audio.addEventListener('timeupdate', this.loopFadeState.timeUpdateHandler);
+
+            // 创建 ended 处理器（备份机制，以防 timeupdate 错过交叉点）
+            this.loopFadeState.endedHandler = () => {
+                if (this.loopFadeState && !this.loopFadeState.isCrossfading) {
+                    console.log('[AudioManager] Audio ended without crossfade, restarting...');
+                    const currentAudio = this.loopFadeState.currentAudio;
+                    if (currentAudio) {
+                        currentAudio.currentTime = 0;
+                        currentAudio.play().catch(err => {
+                            console.warn('[AudioManager] Failed to restart loop:', err);
+                        });
+                    }
+                }
+            };
+            audio.addEventListener('ended', this.loopFadeState.endedHandler);
 
             // 播放并淡入
             audio.play().then(() => {
@@ -268,8 +308,11 @@ class AudioManager {
         newAudio.volume = 0;
         state.nextAudio = newAudio;
 
-        // 为新音频添加 timeupdate 监听
+        // 为新音频添加 timeupdate 和 ended 监听
         newAudio.addEventListener('timeupdate', state.timeUpdateHandler);
+        if (state.endedHandler) {
+            newAudio.addEventListener('ended', state.endedHandler);
+        }
 
         // 开始播放新音频
         newAudio.play().then(() => {
@@ -310,6 +353,9 @@ class AudioManager {
 
                 // 停止并清理旧音频
                 oldAudio.removeEventListener('timeupdate', state.timeUpdateHandler);
+                if (state.endedHandler) {
+                    oldAudio.removeEventListener('ended', state.endedHandler);
+                }
                 oldAudio.pause();
                 oldAudio.src = '';
 
@@ -445,6 +491,9 @@ class AudioManager {
      * 停止循环淡入淡出播放
      */
     stopLoopFade() {
+        // 清理所有活动的 interval（iOS 修复）
+        this._clearAllIntervals();
+
         if (this.loopFadeState) {
             if (this.loopFadeState.fadeInterval) {
                 clearInterval(this.loopFadeState.fadeInterval);
@@ -455,6 +504,9 @@ class AudioManager {
                 if (this.loopFadeState.timeUpdateHandler) {
                     currentAudio.removeEventListener('timeupdate', this.loopFadeState.timeUpdateHandler);
                 }
+                if (this.loopFadeState.endedHandler) {
+                    currentAudio.removeEventListener('ended', this.loopFadeState.endedHandler);
+                }
                 currentAudio.pause();
                 currentAudio.src = '';
             }
@@ -462,6 +514,9 @@ class AudioManager {
             if (this.loopFadeState.nextAudio) {
                 if (this.loopFadeState.timeUpdateHandler) {
                     this.loopFadeState.nextAudio.removeEventListener('timeupdate', this.loopFadeState.timeUpdateHandler);
+                }
+                if (this.loopFadeState.endedHandler) {
+                    this.loopFadeState.nextAudio.removeEventListener('ended', this.loopFadeState.endedHandler);
                 }
                 this.loopFadeState.nextAudio.pause();
                 this.loopFadeState.nextAudio.src = '';
@@ -472,12 +527,140 @@ class AudioManager {
     }
 
     /**
+     * iOS 简化版：直接切换音乐（不使用淡入淡出）
+     */
+    _switchMusicSimple(musicId) {
+        console.log(`[AudioManager] iOS simple switch to: ${musicId}`);
+
+        this._clearAllIntervals();
+
+        if (this.currentMusic) {
+            this.currentMusic.pause();
+            this.currentMusic.src = '';
+            this.currentMusic = null;
+        }
+
+        this.stopLoopFade();
+
+        if (this.muted) {
+            this.currentMusicId = musicId;
+            return;
+        }
+
+        const audio = new Audio();
+        const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
+        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        audio.src = `${this.musicPath}${fileName}`;
+        audio.loop = true;
+
+        const multiplier = this.getVolumeMultiplier(musicId);
+        audio.volume = this.volumes.music * this.volumes.master * multiplier;
+
+        audio.play().then(() => {
+            console.log(`[AudioManager] iOS: ${musicId} playing`);
+        }).catch(err => {
+            console.warn(`[AudioManager] iOS play failed: ${musicId}`, err);
+        });
+
+        this.currentMusic = audio;
+        this.currentMusicId = musicId;
+    }
+
+    /**
+     * iOS 简化版：直接播放音乐
+     */
+    _playMusicSimple(musicId, volume = 1, fadeInDuration = 0) {
+        console.log(`[AudioManager] iOS simple play: ${musicId}`);
+
+        this._clearAllIntervals();
+        this.stopMusic(0);
+
+        if (this.muted) {
+            this.currentMusicId = musicId;
+            return;
+        }
+
+        const audio = new Audio();
+        const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
+        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        audio.src = `${this.musicPath}${fileName}`;
+        audio.loop = true;
+
+        const multiplier = this.getVolumeMultiplier(musicId);
+        const targetVolume = volume * this.volumes.music * this.volumes.master * multiplier;
+
+        if (fadeInDuration > 0) {
+            audio.volume = 0.1;
+            audio.play().then(() => {
+                setTimeout(() => {
+                    audio.volume = targetVolume;
+                }, Math.min(fadeInDuration, 500));
+            }).catch(err => {
+                console.warn(`[AudioManager] iOS play failed: ${musicId}`, err);
+            });
+        } else {
+            audio.volume = targetVolume;
+            audio.play().catch(err => {
+                console.warn(`[AudioManager] iOS play failed: ${musicId}`, err);
+            });
+        }
+
+        this.currentMusic = audio;
+        this.currentMusicId = musicId;
+    }
+
+    /**
+     * iOS 简化版：循环播放（使用原生 loop）
+     */
+    _playMusicWithLoopSimple(musicId, volume = 1) {
+        console.log(`[AudioManager] iOS simple loop: ${musicId}`);
+
+        this._clearAllIntervals();
+        this.stopLoopFade();
+        this.stopMusic(0);
+
+        if (this.muted) {
+            this.currentMusicId = musicId;
+            return;
+        }
+
+        const audio = new Audio();
+        const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
+        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        audio.src = `${this.musicPath}${fileName}`;
+        audio.loop = true;
+
+        const multiplier = this.getVolumeMultiplier(musicId);
+        audio.volume = volume * this.volumes.music * this.volumes.master * multiplier;
+
+        audio.play().then(() => {
+            console.log(`[AudioManager] iOS loop: ${musicId} playing`);
+        }).catch(err => {
+            console.warn(`[AudioManager] iOS loop failed: ${musicId}`, err);
+        });
+
+        this.currentMusic = audio;
+        this.currentMusicId = musicId;
+
+        this.loopFadeState = {
+            musicId: musicId,
+            currentAudio: audio,
+            isSimpleLoop: true
+        };
+    }
+
+    /**
      * 切换背景音乐（带淡出淡入效果）
      * @param {string} musicId - 新音乐ID
      * @param {number} duration - 淡化时长（毫秒），默认1000ms
      */
     switchMusic(musicId, duration = 1000) {
         if (this.currentMusicId === musicId) return;
+
+        // iOS 使用简化版本（避免 setInterval volume 修改问题）
+        if (this.isIOS) {
+            return this._switchMusicSimple(musicId);
+        }
 
         // 先保存旧音频的引用和音量（在 stopLoopFade 之前）
         let oldMusic = this.currentMusic;
