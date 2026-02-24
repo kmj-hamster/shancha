@@ -40,9 +40,9 @@ class AudioManager {
         // 音频路径配置
         this.basePath = '../assets/audio/';
         this.sfxPath = this.basePath + 'sfx/';
-        // BGM和自定义音效统一使用CDN加速
-        this.musicPath = 'https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/';
-        this.customSfxPath = 'https://cdn.jsdelivr.net/gh/kmj-hamster/shancha@main/sound/';
+        // BGM和自定义音效使用本地路径（GitHub Pages 部署）
+        this.musicPath = './sound/';
+        this.customSfxPath = './sound/';
 
         // iOS 检测（用于简化音频切换逻辑）
         this.isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
