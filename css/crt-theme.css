@@ -346,8 +346,16 @@ body.lang-en .ecg-label-en {
 
 /* ========== 7. 手机横屏适配 (Mobile Landscape) ========== */
 
-/* 检测手机横屏：宽度 ≤ 932px（iPhone 15 Pro Max 横屏）且高度 ≤ 500px */
-@media (max-width: 932px) and (max-height: 500px) and (orientation: landscape) {
+/* 检测手机横屏（与 app.js 的 isMobileLandscape() 保持一致）：
+   条件1: 高度 ≤ 600px 且横屏（覆盖大多数手机）
+   条件2: 宽高比 ≥ 2:1 且高度 ≤ 1200px 且横屏（覆盖超宽屏/折叠屏设备）
+
+   设备参考：
+   - iPhone 15 Pro Max 横屏: 932 × 430
+   - 用户设备案例: 1080 × 517（需要条件1覆盖）
+*/
+@media ((max-height: 600px) and (orientation: landscape)),
+       ((min-aspect-ratio: 2/1) and (max-height: 1200px) and (orientation: landscape)) {
     /* 隐藏灰色边框，内容全屏 */
     .monitor-bezel {
         width: 100vw;
