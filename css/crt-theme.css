@@ -354,8 +354,8 @@ body.lang-en .ecg-label-en {
    - iPhone 15 Pro Max 横屏: 932 × 430
    - 用户设备案例: 1080 × 517（需要条件1覆盖）
 */
-@media ((max-height: 600px) and (orientation: landscape)),
-       ((min-aspect-ratio: 2/1) and (max-height: 1200px) and (orientation: landscape)) {
+@media (max-height: 600px) and (orientation: landscape),
+       (min-aspect-ratio: 2/1) and (max-height: 1200px) and (orientation: landscape) {
     /* 隐藏灰色边框，内容全屏 */
     .monitor-bezel {
         width: 100vw;

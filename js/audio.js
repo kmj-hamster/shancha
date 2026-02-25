@@ -88,7 +88,7 @@ class AudioManager {
             const basePath = useCustomPath ? this.customSfxPath : this.sfxPath;
             // 检查是否已有扩展名（支持.mp3, .wav, .ogg, .m4a等）
             const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(soundId);
-            const fileName = hasExtension ? soundId : `${soundId}.ogg`;
+            const fileName = hasExtension ? soundId : `${soundId}.m4a`;
             audio.src = `${basePath}${fileName}`;
 
             console.log(`[AudioManager] Audio source set to: ${audio.src}`);
@@ -148,7 +148,7 @@ class AudioManager {
             this.currentMusic = new Audio();
             // 检查是否已有扩展名（支持.mp3, .wav, .ogg, .m4a等）
             const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-            const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+            const fileName = hasExtension ? musicId : `${musicId}.m4a`;
             this.currentMusic.src = `${this.musicPath}${fileName}`;
             this.currentMusic.loop = true;
 
@@ -209,7 +209,7 @@ class AudioManager {
 
             // 构建音频路径
             const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-            const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+            const fileName = hasExtension ? musicId : `${musicId}.m4a`;
             const audioSrc = `${this.musicPath}${fileName}`;
 
             // 创建第一个音频实例
@@ -537,7 +537,7 @@ class AudioManager {
         this.stopLoopFade();
 
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        const fileName = hasExtension ? musicId : `${musicId}.m4a`;
         const newSrc = `${this.musicPath}${fileName}`;
 
         if (this.muted) {
@@ -608,7 +608,7 @@ class AudioManager {
         }
 
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        const fileName = hasExtension ? musicId : `${musicId}.m4a`;
         const newSrc = `${this.musicPath}${fileName}`;
 
         const multiplier = this.getVolumeMultiplier(musicId);
@@ -692,7 +692,7 @@ class AudioManager {
         }
 
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        const fileName = hasExtension ? musicId : `${musicId}.m4a`;
         const newSrc = `${this.musicPath}${fileName}`;
 
         const multiplier = this.getVolumeMultiplier(musicId);
@@ -779,7 +779,7 @@ class AudioManager {
         const newMusic = new Audio();
         // 检查是否已有扩展名（支持.mp3, .wav, .ogg, .m4a等）
         const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
-        const fileName = hasExtension ? musicId : `${musicId}.ogg`;
+        const fileName = hasExtension ? musicId : `${musicId}.m4a`;
         newMusic.src = `${this.musicPath}${fileName}`;
         newMusic.loop = true;
         newMusic.volume = 0;
@@ -945,7 +945,7 @@ class AudioManager {
         for (const id of soundIds) {
             try {
                 const audio = new Audio();
-                audio.src = `${this.sfxPath}${id}.ogg`;
+                audio.src = `${this.sfxPath}${id}.m4a`;
                 audio.load();
                 this.sfxCache.set(id, audio.src);
             } catch (err) {
@@ -964,7 +964,7 @@ class AudioManager {
         if (this.muted) return { stop: () => {} };
 
         const audio = new Audio();
-        audio.src = `${this.sfxPath}${soundId}.ogg`;
+        audio.src = `${this.sfxPath}${soundId}.m4a`;
         audio.loop = true;
         audio.volume = volume * this.volumes.sfx * this.volumes.master;
 

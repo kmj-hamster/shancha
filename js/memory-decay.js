@@ -1027,7 +1027,7 @@ class MemoryDecayEffect {
             setTimeout(() => {
                 console.log('[BGM] Playing Opening SFX (12s)...');
                 if (window.audioManager) {
-                    audioManager.playSFX('Opening.ogg', 1, true);
+                    audioManager.playSFX('Opening.m4a', 1, true);
                 }
             }, 2000);
 

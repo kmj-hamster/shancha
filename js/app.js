@@ -310,8 +310,8 @@ const CARD_BGM_MAP = {
     'file_018': 'Dream',        // 点击file_018时切换到Dream
     'file_015': 'Atmosphere',   // 点击file_015时切换到Atmosphere
     'mem_025': 'Dream',         // 点击mem_025时切换到Dream
-    'mem_012': 'Mozart.ogg',    // 初次点击mem_012时播放Mozart
-    'mem_015': 'Wagner.ogg',    // 初次点击mem_015时播放Wagner
+    'mem_012': 'Mozart.m4a',    // 初次点击mem_012时播放Mozart
+    'mem_015': 'Wagner.m4a',    // 初次点击mem_015时播放Wagner
     'mem_009': 'Memory'         // 初次阅读mem_009时切换回Memory
 };
 
@@ -3300,7 +3300,7 @@ function playDeletionAnimation2() {
     // 🎵 播放Error BGM（1秒淡入）
     if (window.audioManager) {
         console.log('[BGM] Playing Error BGM for deletion animation 2 (1s fade-in)...');
-        audioManager.playMusic('Error.ogg', 1, 1000);
+        audioManager.playMusic('Error.m4a', 1, 1000);
     }
 
     const deletion2 = new DeletionAnimation2({ glitchEnabled: true });
