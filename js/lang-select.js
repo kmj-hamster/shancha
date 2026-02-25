@@ -106,6 +106,9 @@ class LangSelect {
    * @returns {Promise} 加载完成的Promise
    */
   static loadGameData(lang) {
+    // 设置HTML lang属性（用于浏览器语言识别，避免自动翻译提示）
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'
+
     return new Promise((resolve, reject) => {
       // 移除旧脚本（如果存在）
       const oldScript = document.querySelector('script[src*="cards-data-"]')
@@ -168,7 +171,7 @@ class LangSelect {
     document.body.classList.remove('lang-zh', 'lang-en')
     document.body.classList.add(`lang-${lang}`)
 
-    // 加载对应语言的游戏数据
+    // 加载对应语言的游戏数据（会自动设置HTML lang属性）
     try {
       await LangSelect.loadGameData(lang)
     } catch (error) {

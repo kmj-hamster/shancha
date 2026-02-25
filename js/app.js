@@ -1215,12 +1215,14 @@ function processDeleteModeInput(input) {
     const deleteStage = gameState.getDeleteStage();
     const pendingConfirmation = gameState.getPendingConfirmation();
 
-    // 处理 yes/no 确认（同时接受 y/n 简写）
+    // 处理 yes/no 确认（同时接受 y/n 简写和中文 是/否）
     const lowerInput = input.toLowerCase();
-    if (lowerInput === 'yes' || lowerInput === 'y' || lowerInput === 'no' || lowerInput === 'n') {
+    const isYes = lowerInput === 'yes' || lowerInput === 'y' || input === '是';
+    const isNo = lowerInput === 'no' || lowerInput === 'n' || input === '否';
+    if (isYes || isNo) {
         if (pendingConfirmation) {
-            // 将 y/n 转换为 yes/no
-            const normalizedInput = (lowerInput === 'y') ? 'yes' : (lowerInput === 'n') ? 'no' : lowerInput;
+            // 统一转换为 yes/no
+            const normalizedInput = isYes ? 'yes' : 'no';
             handleDeleteCommand(normalizedInput);
             return;
         }
@@ -1326,7 +1328,7 @@ function processCommand(command) {
     }
 
     // 禁用 /delete 指令（现在只能通过 DELETE 模式操作）
-    if (cmd.startsWith('delete') || cmd === 'yes' || cmd === 'no' || cmd === 'y' || cmd === 'n') {
+    if (cmd.startsWith('delete') || cmd === 'yes' || cmd === 'no' || cmd === 'y' || cmd === 'n' || command === '是' || command === '否') {
         showFeedback(TEXT.unknownCommand, 'error');
         return;
     }
@@ -2949,15 +2951,17 @@ function handleDeleteCommand(command) {
     const deleteStage = gameState.getDeleteStage();
     const pendingConfirmation = gameState.getPendingConfirmation();
 
-    // 处理yes/no回答（同时接受 y/n 简写）
-    if (command === 'yes' || command === 'no' || command === 'y' || command === 'n') {
+    // 处理yes/no回答（同时接受 y/n 简写和中文 是/否）
+    const isYesCmd = command === 'yes' || command === 'y' || command === '是';
+    const isNoCmd = command === 'no' || command === 'n' || command === '否';
+    if (isYesCmd || isNoCmd) {
         if (!pendingConfirmation) {
             showFeedback(TEXT.unknownCommand, 'error');
             return;
         }
 
-        // 将 y/n 转换为 yes/no
-        const normalizedCommand = (command === 'y') ? 'yes' : (command === 'n') ? 'no' : command;
+        // 统一转换为 yes/no
+        const normalizedCommand = isYesCmd ? 'yes' : 'no';
 
         if (normalizedCommand === 'no') {
             // 取消操作
