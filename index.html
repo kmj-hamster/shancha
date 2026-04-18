@@ -320,6 +320,29 @@
   <!-- 加载游戏模块 -->
   <!-- 音频管理器 - 必须最早加载 -->
   <script src="./js/audio.js"></script>
+  <script>
+    // 【优化】尽早预加载 BGM，解决首播延迟问题
+    if (window.audioManager) {
+      // 优先级排序：常用/大文件优先
+      const bgmToPreload = [
+        'Atmosphere',    // 默认 BGM
+        'Error',         // 删除动画（1.3MB，关键）
+        'Wagner',        // 最大文件（3.9MB）
+        'Heartache',     // 复苏动画
+        'Memory',        // 常用
+        'Mozart',        // 特定卡片
+        'Delete',        // 删除动画2
+        'Dream',         // 特定卡片
+        'discover',      // 发现音效
+        'Opening',       // 开场音效
+        'Heartache-2'    // 备用
+      ];
+      console.log('[Init] Starting BGM preload...');
+      audioManager.preloadBGM(bgmToPreload, (loaded, total) => {
+        console.log(`[Init] BGM preload progress: ${loaded}/${total}`);
+      });
+    }
+  </script>
 
   <!-- 数据文件由 lang-select.js 根据语言动态加载 -->
   <script src="./js/state.js"></script>

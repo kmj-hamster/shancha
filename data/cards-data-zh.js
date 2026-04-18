@@ -1850,7 +1850,15 @@ window.CARDS_DATA = {
           "style": "default"
         },
         {
+          "text": "",
+          "style": "default"
+        },
+        {
           "text": "发件人：首都科学院，\"铁人计划\"项目组",
+          "style": "default"
+        },
+        {
+          "text": "",
           "style": "default"
         },
         {
@@ -1941,7 +1949,15 @@ window.CARDS_DATA = {
           "style": "default"
         },
         {
+          "text": "",
+          "style": "default"
+        },
+        {
           "text": "发件人：首都科学院，\"铁人计划\"项目组",
+          "style": "default"
+        },
+        {
+          "text": "",
           "style": "default"
         },
         {
@@ -2883,7 +2899,7 @@ window.CARDS_DATA = {
           "breakAfter": true
         },
         {
-          "text": "随着他的衰老，它不断侵蚀他其他的记忆。",
+          "text": "随着他的衰老，它不断侵蚀其他的记忆。",
           "style": "default",
           "breakAfter": true
         },

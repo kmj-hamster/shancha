@@ -19,6 +19,10 @@ class AudioManager {
         // 音效缓存
         this.sfxCache = new Map();
 
+        // BGM 预加载缓存
+        this.bgmCache = new Map();
+        this.preloadProgress = { loaded: 0, total: 0 };
+
         // 静音状态
         this.muted = false;
 
@@ -952,6 +956,75 @@ class AudioManager {
                 console.warn(`Failed to preload: ${id}`, err);
             }
         }
+    }
+
+    /**
+     * 预加载 BGM 文件（解决首播延迟）
+     * @param {Array<string>} musicIds - BGM ID数组
+     * @param {Function} onProgress - 进度回调 (loaded, total)
+     * @returns {Promise} 预加载完成的 Promise
+     */
+    async preloadBGM(musicIds, onProgress = null) {
+        console.log('[AudioManager] Starting BGM preload...');
+        this.preloadProgress = { loaded: 0, total: musicIds.length };
+
+        const preloadOne = (musicId) => {
+            return new Promise((resolve) => {
+                const audio = new Audio();
+                const hasExtension = /\.(mp3|wav|ogg|m4a)$/i.test(musicId);
+                const fileName = hasExtension ? musicId : `${musicId}.m4a`;
+                audio.src = `${this.musicPath}${fileName}`;
+                audio.preload = 'auto';
+
+                const onLoaded = () => {
+                    this.bgmCache.set(musicId.replace(/\.(mp3|wav|ogg|m4a)$/i, ''), audio);
+                    this.preloadProgress.loaded++;
+                    console.log(`[AudioManager] Preloaded: ${musicId} (${this.preloadProgress.loaded}/${this.preloadProgress.total})`);
+                    if (onProgress) {
+                        onProgress(this.preloadProgress.loaded, this.preloadProgress.total);
+                    }
+                    resolve(true);
+                };
+
+                const onError = (err) => {
+                    console.warn(`[AudioManager] Failed to preload: ${musicId}`, err);
+                    this.preloadProgress.loaded++;
+                    if (onProgress) {
+                        onProgress(this.preloadProgress.loaded, this.preloadProgress.total);
+                    }
+                    resolve(false);
+                };
+
+                // canplaythrough 表示有足够数据可以播放到结束
+                audio.addEventListener('canplaythrough', onLoaded, { once: true });
+                audio.addEventListener('error', onError, { once: true });
+
+                // 超时处理（10秒）
+                setTimeout(() => {
+                    if (!this.bgmCache.has(musicId.replace(/\.(mp3|wav|ogg|m4a)$/i, ''))) {
+                        console.warn(`[AudioManager] Preload timeout: ${musicId}`);
+                        resolve(false);
+                    }
+                }, 10000);
+
+                // 开始加载
+                audio.load();
+            });
+        };
+
+        // 并行预加载所有音频
+        await Promise.all(musicIds.map(id => preloadOne(id)));
+        console.log(`[AudioManager] BGM preload complete: ${this.preloadProgress.loaded}/${this.preloadProgress.total}`);
+    }
+
+    /**
+     * 获取预加载的 BGM（如果有）
+     * @param {string} musicId - 音乐ID
+     * @returns {HTMLAudioElement|null}
+     */
+    getCachedBGM(musicId) {
+        const key = musicId.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
+        return this.bgmCache.get(key) || null;
     }
 
     /**
